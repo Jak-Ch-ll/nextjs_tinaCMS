@@ -1,1 +1,5 @@
-module.exports = {};
+const active = "active";
+
+module.exports = {
+  active,
+};
