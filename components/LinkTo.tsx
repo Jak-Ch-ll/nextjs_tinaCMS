@@ -1,13 +1,16 @@
 // Created by Zack Sheppard (@zackdotcomputer) on 1/19/2021
+// https://gist.github.com/zackdotcomputer/d7af9901e7db87364aad7fbfadb5c99b
 // Freely available under MIT License
 // Workaround for https://github.com/vercel/next.js/issues/5533
 
 import Link, { LinkProps } from "next/link";
 import { AnchorHTMLAttributes, PropsWithChildren } from "react";
 
-type PropTypes = LinkProps & AnchorHTMLAttributes<HTMLAnchorElement>;
+type PropTypes = LinkProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
+
 /// A unified component for the next/link <Link> and a standard <a> anchor.
-/// Will lift href and all other props from NextLinkProps up to the Link.
+/// Will lift href and all other props from Link up to the Link.
 /// Will automatically make an <a> tag containing the children and pass it remaining props.
 const LinkTo = ({
   children,
@@ -16,13 +19,16 @@ const LinkTo = ({
   replace,
   scroll,
   shallow,
+  passHref,
   prefetch,
   locale,
   ...anchorProps
 }: PropsWithChildren<PropTypes>) => {
   return (
     // These props are lifted up to the `Link` element. All others are passed to the `<a>`
-    <Link {...{ href, as, replace, scroll, shallow, prefetch, locale }}>
+    <Link
+      {...{ href, as, replace, scroll, shallow, prefetch, locale, passHref }}
+    >
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <a {...anchorProps}>{children}</a>
     </Link>
