@@ -18,13 +18,12 @@ const handler = nc<NextApiRequest, NextApiResponse>()
   .patch(async (req, res) => {
     const id = parseInt(req.query.id as string);
     if (!req.body) return res.writeHead(400, "Request is missing a body").end();
-    const data = JSON.parse(req.body);
     try {
       const article = await prisma.article.update({
         where: {
           id,
         },
-        data,
+        data: req.body,
       });
       return res.status(200).send(article);
     } catch (err) {

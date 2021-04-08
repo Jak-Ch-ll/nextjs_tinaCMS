@@ -15,11 +15,11 @@ export function Banner() {
       text: "Blog",
     },
     {
-      url: "/tina",
+      url: "/edit",
       text: "Tina",
     },
     {
-      url: "/tina/new",
+      url: "/edit/new",
       text: "New",
     },
   ];

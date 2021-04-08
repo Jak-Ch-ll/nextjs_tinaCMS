@@ -1,7 +1,12 @@
-import fetch from "node-fetch";
+/**
+ * @jest-environment node
+ */
+
 import { NewArticle } from "../_types";
 import prisma from "../../../../prisma/prisma";
 import { API_ARTICLE_ENDPOINT } from "../_constants";
+import fetch from "node-fetch";
+import axios from "axios";
 
 const validArticle: NewArticle = {
   title: "This is a title",
@@ -28,7 +33,7 @@ describe("/api/articles/[id]", () => {
         data: validArticle,
       });
 
-      const res = await fetch(endpoint + newArticle.id);
+      const res = await axios(endpoint + newArticle.id);
       expect(res.status).toBe(200);
     });
 
@@ -37,26 +42,22 @@ describe("/api/articles/[id]", () => {
         data: validArticle,
       });
 
-      const res = await fetch(endpoint + newArticle.id);
-      const article = await res.json();
-      expect(article.id).toBe(newArticle.id);
+      const res = await axios(endpoint + newArticle.id);
+      expect(res.data.id).toBe(newArticle.id);
     });
   });
 
-  describe("PATCH requests to /api/articles/:id", () => {
+  describe("PATCH", () => {
     it("returns '200' on PATCH request to valid /article/:id", async () => {
       const newArticle = await prisma.article.create({
         data: validArticle,
       });
 
-      const body = JSON.stringify({
+      const data = {
         title: "A new title",
-      });
+      };
 
-      const res = await fetch(endpoint + newArticle.id, {
-        method: "PATCH",
-        body,
-      });
+      const res = await axios.patch(endpoint + newArticle.id, data);
       expect(res.status).toBe(200);
     });
 
@@ -67,13 +68,10 @@ describe("/api/articles/[id]", () => {
 
       const titleAfter = articleBefore.title + "???";
 
-      const body = JSON.stringify({
+      const data = {
         title: titleAfter,
-      });
-      await fetch(endpoint + articleBefore.id, {
-        method: "PATCH",
-        body,
-      });
+      };
+      await axios.patch(endpoint + articleBefore.id, data);
 
       const articleAfter = await prisma.article.findUnique({
         where: {
@@ -91,35 +89,29 @@ describe("/api/articles/[id]", () => {
 
       const titleAfter = articleBefore.title + "???";
 
-      const body = JSON.stringify({
+      const data = {
         title: titleAfter,
-      });
-      const res = await fetch(endpoint + articleBefore.id, {
-        method: "PATCH",
-        body,
-      });
+      };
+      const res = await axios.patch(endpoint + articleBefore.id, data);
 
-      const articleAfter = await res.json();
-      expect(articleAfter.title).toBe(titleAfter);
+      expect(res.data.title).toBe(titleAfter);
     });
 
     it("returns status '400' on PATCH request to invalid id", async () => {
-      const body = JSON.stringify({ title: "Some title" });
+      const data = { title: "Some title" };
 
-      const res = await fetch(endpoint + "1", {
-        method: "PATCH",
-        body,
+      const res = await axios.patch(endpoint + "1", data, {
+        validateStatus: () => true,
       });
 
       expect(res.status).toBe(400);
     });
 
     it("returns message 'Article with id 1 not found' on invalid id", async () => {
-      const body = JSON.stringify({ title: "Some title" });
+      const data = { title: "Some title" };
 
-      const res = await fetch(endpoint + "1", {
-        method: "PATCH",
-        body,
+      const res = await axios.patch(endpoint + "1", data, {
+        validateStatus: () => true,
       });
 
       expect(res.statusText).toBe("Article with id 1 not found");
@@ -135,15 +127,13 @@ describe("/api/articles/[id]", () => {
     });
   });
 
-  describe("DELETE requests to /api/articles/:id", () => {
+  describe("DELETE", () => {
     it("returns '204' on valid request", async () => {
       const article = await prisma.article.create({
         data: validArticle,
       });
 
-      const res = await fetch(endpoint + article.id, {
-        method: "DELETE",
-      });
+      const res = await axios.delete(endpoint + article.id);
 
       expect(res.status).toBe(204);
     });
@@ -153,9 +143,7 @@ describe("/api/articles/[id]", () => {
         data: validArticle,
       });
 
-      const res = await fetch(endpoint + article.id, {
-        method: "DELETE",
-      });
+      const res = await axios.delete(endpoint + article.id);
 
       const articles = await prisma.article.findMany();
 
@@ -163,12 +151,13 @@ describe("/api/articles/[id]", () => {
     });
   });
 
-  describe("General requests to /api/articles/:id", () => {
+  describe("General requests", () => {
     it.each([["POST"], ["PUT"], ["OPTIONS"], ["TRACE"]])(
       "sends back status '405' on method '%s'",
-      async (method) => {
-        const res = await fetch(endpoint + "1", {
+      async (method: any) => {
+        const res = await axios(endpoint + "1", {
           method,
+          validateStatus: () => true,
         });
         expect(res.status).toBe(405);
       }
@@ -176,9 +165,10 @@ describe("/api/articles/[id]", () => {
 
     it.each([["GET"], ["DELETE"]])(
       "returns status '400' and message 'Article with id 1 not found' on %s request to invalid id",
-      async (method) => {
-        const res = await fetch(endpoint + "1", {
+      async (method: any) => {
+        const res = await axios(endpoint + "1", {
           method,
+          validateStatus: () => true,
         });
 
         expect(res.status).toBe(400);

@@ -1,0 +1,43 @@
+import { Article } from "@prisma/client";
+import { GetServerSideProps } from "next";
+import ReactMarkdown from "react-markdown";
+import { BlogForm } from "../../components/tina/BlogForm";
+import { Tina } from "../../components/tina/Tina";
+import { getArticleToRender } from "../../utils";
+
+interface ArticleToRender extends Omit<Article, "createdAt" | "updatedAt"> {
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ArticlePageProps {
+  article: ArticleToRender;
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const url = params!.url as string;
+
+  try {
+    const article = await getArticleToRender({ url });
+
+    return {
+      props: {
+        article,
+      },
+    };
+  } catch {
+    return {
+      notFound: true,
+    };
+  }
+};
+
+export default function ArticlePage({ article }: ArticlePageProps) {
+  return (
+    <div className="max-width">
+      <h1>{article.title}</h1>
+      <p>{article.teaser}</p>
+      <ReactMarkdown children={article.content} />
+    </div>
+  );
+}

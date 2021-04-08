@@ -1,0 +1,9 @@
+@use "/src/styles/properties.scss" as *;
+
+.container {
+  max-width: $max-width;
+}
+
+.imgContainer img {
+  max-width: 100%;
+}

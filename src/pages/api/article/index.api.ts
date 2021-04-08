@@ -10,7 +10,7 @@ export default nc<NextApiRequest, NextApiResponse>()
   })
 
   .post(async (req, res) => {
-    if (!req.body) {
+    if (!req.body || Object.keys(req.body).length === 0) {
       return res.writeHead(400, "Request is missing a body").end();
     }
 
