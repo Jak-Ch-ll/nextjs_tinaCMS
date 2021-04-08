@@ -1,7 +1,7 @@
 import { AppProps } from "next/dist/next-server/lib/router/router";
 import { TinaCMS, TinaProvider } from "tinacms";
 import { Banner } from "../components/Banner";
-import { ImageStore } from "../ImageStore/ImageStore";
+import { ImageStore } from "../utils/ImageStore/ImageStore";
 import "../styles/globals.scss";
 
 function App({ Component, pageProps }: AppProps) {

@@ -59,9 +59,7 @@
       "<rootDir>/jest_setup/jest.setup.js"
     ],
     "roots": [
-      "<rootDir>/pages",
-      "<rootDir>/components",
-      "<rootDir>/ImageStore"
+      "<rootDir>/src"
     ],
     "moduleNameMapper": {
       "^.+\\.(css|scss|sass)$": "<rootDir>/jest_setup/jest.css.stub.js"

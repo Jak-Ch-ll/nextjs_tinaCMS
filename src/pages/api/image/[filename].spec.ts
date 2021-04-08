@@ -2,13 +2,14 @@
  * @jest-environment node
  */
 
-import axios, { Method } from "axios";
+import axios from "axios";
 import fs from "fs/promises";
 import path from "path";
+import { API_IMAGE_ENDPOINT, IMAGE_UPLOAD_DIR } from "../_constants";
 
-import { UPLOAD_DIR } from "../../../../ImageStore/_constants";
+const uploadDir = IMAGE_UPLOAD_DIR;
 
-const endpoint = "http://localhost:3000/api/v1/images";
+const endpoint = API_IMAGE_ENDPOINT;
 const testFileName = "someFile.txt";
 const fileContent = "Hello test";
 
@@ -35,12 +36,20 @@ const deleteInvalidImage = () => {
 };
 
 beforeEach(async () => {
-  await fs.rm(UPLOAD_DIR, {
+  await fs.rm(uploadDir, {
     recursive: true,
     force: true,
   });
-  await fs.mkdir(UPLOAD_DIR);
-  await fs.appendFile(path.join(UPLOAD_DIR, testFileName), fileContent);
+  await fs.mkdir(uploadDir);
+  await fs.appendFile(path.join(uploadDir, testFileName), fileContent);
+});
+
+afterAll(async () => {
+  await fs.rm(uploadDir, {
+    recursive: true,
+    force: true,
+  });
+  await fs.mkdir(uploadDir);
 });
 
 describe(`GET to /api/images/[filename]`, () => {
@@ -79,7 +88,7 @@ describe(`DELETE to /api/images/[filename]`, () => {
   it("successfully deletes the file", async () => {
     await deleteImage();
 
-    const file = await fs.readdir(UPLOAD_DIR);
+    const file = await fs.readdir(uploadDir);
 
     expect(file).toHaveLength(0);
   });
@@ -106,6 +115,6 @@ describe("Other requests to /images/[filename]", () => {
         validateStatus: () => true,
       });
       expect(res.status).toBe(405);
-    },
+    }
   );
 });

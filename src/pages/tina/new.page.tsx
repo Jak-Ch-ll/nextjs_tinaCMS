@@ -6,7 +6,9 @@ import {
   InlineText,
   InlineTextarea,
 } from "react-tinacms-inline";
-import { ARTICLES_ENDPOINT } from "../../constants";
+
+import { API_ARTICLE_ENDPOINT_INTERNAL as endpoint } from "../api/_constants";
+
 import styles from "./new.module.scss";
 
 export default function NewBlogpost() {
@@ -16,7 +18,7 @@ export default function NewBlogpost() {
     onSubmit: (formData) => {
       console.log("Submitting?");
       console.log(formData);
-      axios.post(ARTICLES_ENDPOINT, formData);
+      axios.post(endpoint, formData);
     },
     fields: [
       {
@@ -30,8 +32,8 @@ export default function NewBlogpost() {
         name: "url",
         label: "URL",
         component: "text",
-        description: "The URL after www.homepage.de/blog/"
-      }
+        description: "The URL after www.homepage.de/blog/",
+      },
     ],
   });
 

@@ -1,19 +1,6 @@
-import { Prisma } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 import prisma from "../../../../prisma/prisma";
-
-export type NewArticle = Prisma.ArticleGetPayload<{
-  select: {
-    title: true;
-    teaser: true;
-    content: true;
-    url: true;
-    img: true;
-  };
-}>;
-
-export const articlesEndpoint = "/api/v1/articles";
 
 export default nc<NextApiRequest, NextApiResponse>()
   .get(async (req, res) => {

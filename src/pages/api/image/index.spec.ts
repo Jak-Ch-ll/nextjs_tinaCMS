@@ -6,10 +6,13 @@ import fetch from "node-fetch";
 import fs from "fs/promises";
 import path from "path";
 import FormData from "form-data";
-import { UPLOAD_DIR } from "../../../../ImageStore/_constants";
 import axios from "axios";
 
-const endpoint = "http://localhost:3000/api/v1/images/";
+import { API_IMAGE_ENDPOINT } from "../_constants";
+import { IMAGE_UPLOAD_DIR } from "../_constants";
+
+const endpoint = API_IMAGE_ENDPOINT;
+const uploadDir = IMAGE_UPLOAD_DIR;
 
 enum testFileName {
   GET = "getRequest.txt",
@@ -29,16 +32,24 @@ const postNewImage = async () => {
   });
 };
 
+afterAll(async () => {
+  await fs.rm(uploadDir, {
+    recursive: true,
+    force: true,
+  });
+  await fs.mkdir(uploadDir);
+});
+
 describe("GET to /images", () => {
   beforeAll(async () => {
-    await fs.rm(UPLOAD_DIR, {
+    await fs.rm(uploadDir, {
       recursive: true,
       force: true,
     });
-    await fs.mkdir(UPLOAD_DIR);
+    await fs.mkdir(uploadDir);
     await fs.appendFile(
-      path.join(UPLOAD_DIR, testFileName.GET),
-      "Hello get request",
+      path.join(uploadDir, testFileName.GET),
+      "Hello get request"
     );
   });
 
@@ -63,11 +74,11 @@ describe("GET to /images", () => {
 
 describe("POST to /images", () => {
   beforeEach(async () => {
-    await fs.rm(UPLOAD_DIR, {
+    await fs.rm(uploadDir, {
       recursive: true,
       force: true,
     });
-    await fs.mkdir(UPLOAD_DIR);
+    await fs.mkdir(uploadDir);
   });
 
   it("returns status '201'", async () => {
@@ -78,7 +89,7 @@ describe("POST to /images", () => {
 
   it(`creates a file with the name '${testFileName.POST}'`, async () => {
     await postNewImage();
-    const files = await fs.readdir(UPLOAD_DIR);
+    const files = await fs.readdir(uploadDir);
 
     expect(files[0]).toBe(testFileName.POST);
   });
@@ -92,6 +103,6 @@ describe("Other requests to /images", () => {
         method,
       });
       expect(res.status).toBe(405);
-    },
+    }
   );
 });

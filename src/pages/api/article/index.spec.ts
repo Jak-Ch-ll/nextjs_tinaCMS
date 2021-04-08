@@ -3,9 +3,10 @@
  */
 
 import fetch from "node-fetch";
-import { NewArticle } from "./index.api";
+import { NewArticle } from "../_types";
 import prisma from "../../../../prisma/prisma";
 import axios from "axios";
+import { API_ARTICLE_ENDPOINT } from "../_constants";
 
 const validArticle: NewArticle = {
   title: "This is a title",
@@ -15,7 +16,7 @@ const validArticle: NewArticle = {
   img: "image.jpg",
 };
 
-const endpoint = "http://localhost:3000/api/v1/articles/";
+const endpoint = API_ARTICLE_ENDPOINT;
 
 const postNewArticle = async (article = validArticle) => {
   return await axios.post(endpoint, article);
@@ -89,6 +90,6 @@ describe("Other requests to /api/articles", () => {
         method,
       });
       expect(res.status).toBe(405);
-    },
+    }
   );
 });

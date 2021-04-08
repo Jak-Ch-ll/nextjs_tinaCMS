@@ -1,6 +1,8 @@
 import axios from "axios";
 import { ImageStore } from "./ImageStore";
-import { API_PATH } from "./_constants";
+import { API_IMAGE_ENDPOINT_INTERNAL } from "../../pages/api/_constants";
+
+const endpoint = API_IMAGE_ENDPOINT_INTERNAL;
 
 const imageStore = new ImageStore();
 
@@ -16,7 +18,7 @@ mockedAxios.post.mockResolvedValue({
 describe("ImageStore.ts", () => {
   describe(".persist", () => {
     it("makes a POST request containing file data and name", async () => {
-      const medias = await imageStore.persist([
+      await imageStore.persist([
         {
           directory: "/",
           file: testFile,
@@ -25,9 +27,8 @@ describe("ImageStore.ts", () => {
 
       const formData = new FormData();
       formData.append(testFile.name, testFile);
-      console.log(formData);
 
-      expect(mockedAxios.post).toHaveBeenCalledWith(API_PATH, formData, {
+      expect(mockedAxios.post).toHaveBeenCalledWith(endpoint, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
