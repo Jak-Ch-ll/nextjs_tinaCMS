@@ -1,19 +1,21 @@
 import { Prisma } from "@prisma/client";
-import { checkSchema } from "express-validator";
 import { NextApiRequest, NextApiResponse } from "next";
-import nc, { NextHandler, RequestHandler } from "next-connect";
+import nc from "next-connect";
 import prisma from "../../../../prisma/prisma";
 
 export type NewArticle = Prisma.ArticleGetPayload<{
   select: {
     title: true;
-    previewText: true;
+    teaser: true;
     content: true;
     url: true;
+    img: true;
   };
 }>;
 
-const handler = nc<NextApiRequest, NextApiResponse>()
+export const articlesEndpoint = "/api/v1/articles";
+
+export default nc<NextApiRequest, NextApiResponse>()
   .get(async (req, res) => {
     const articles = await prisma.article.findMany();
 
@@ -21,11 +23,12 @@ const handler = nc<NextApiRequest, NextApiResponse>()
   })
 
   .post(async (req, res) => {
-    if (!req.body) return res.writeHead(400, "Request is missing a body").end();
-    const data = JSON.parse(req.body);
+    if (!req.body) {
+      return res.writeHead(400, "Request is missing a body").end();
+    }
 
     const newArticle = await prisma.article.create({
-      data,
+      data: req.body,
     });
     return res
       .writeHead(201, {
@@ -37,5 +40,3 @@ const handler = nc<NextApiRequest, NextApiResponse>()
   .all((req, res) => {
     return res.status(405).end();
   });
-
-export default handler;

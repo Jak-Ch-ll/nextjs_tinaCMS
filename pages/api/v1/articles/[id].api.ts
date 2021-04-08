@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 import prisma from "../../../../prisma/prisma";
@@ -11,7 +10,8 @@ const handler = nc<NextApiRequest, NextApiResponse>()
   .get(async (req, res) => {
     const id = parseInt(req.query.id as string);
     const article = await prisma.article.findUnique({ where: { id } });
-    if (!article) res.writeHead(400, `Article with id ${id} not found`).end();
+    if (!article)
+      return res.writeHead(400, `Article with id ${id} not found`).end();
     return res.status(200).send(article);
   })
 

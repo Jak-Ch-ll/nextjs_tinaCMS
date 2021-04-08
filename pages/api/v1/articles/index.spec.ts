@@ -1,26 +1,28 @@
+/**
+ * @jest-environment node
+ */
+
 import fetch from "node-fetch";
-import { NewArticle } from ".";
+import { NewArticle } from "./index.api";
 import prisma from "../../../../prisma/prisma";
+import axios from "axios";
 
 const validArticle: NewArticle = {
   title: "This is a title",
-  previewText: "This is the preview text",
+  teaser: "This is the preview text",
   content: "This is some content",
   url: "this-is-the-url",
+  img: "image.jpg",
 };
 
 const endpoint = "http://localhost:3000/api/v1/articles/";
 
 const postNewArticle = async (article = validArticle) => {
-  const body = JSON.stringify(article);
-  return await fetch(endpoint, {
-    method: "POST",
-    body,
-  });
+  return await axios.post(endpoint, article);
 };
 
 const getAllArticles = async () => {
-  return await fetch(endpoint);
+  return await axios(endpoint);
 };
 
 beforeEach(async () => {
@@ -40,7 +42,7 @@ describe("GET request to /api/articles", () => {
     });
 
     const res = await getAllArticles();
-    const articles = await res.json();
+    const articles = res.data;
     expect(articles[0].id).toBe(dbArticle.id);
   });
 });
@@ -63,7 +65,7 @@ describe("POST request to /api/articles", () => {
       rejectOnNotFound: true,
     });
 
-    const url = res.headers.get("location");
+    const url = res.headers.location;
     expect(url).toBe("/" + dbArticle.url);
   });
 

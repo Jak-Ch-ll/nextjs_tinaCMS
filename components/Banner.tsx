@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
-import Link from "next/link";
 
-import styles from "./Banner.module.sass";
+import styles from "./Banner.module.scss";
 import LinkTo from "./LinkTo";
 
 export function Banner() {
@@ -15,31 +14,43 @@ export function Banner() {
       url: "/blog",
       text: "Blog",
     },
+    {
+      url: "/tina",
+      text: "Tina",
+    },
+    {
+      url: "/tina/new",
+      text: "New",
+    },
   ];
 
   return (
-    <header className={styles.header}>
-      <div>
-        <LinkTo href="/">My Blog</LinkTo>
+    <header className={styles.banner}>
+      <div className={styles.container}>
+        <div>
+          <LinkTo className={styles.logo} href="/">
+            My Blog
+          </LinkTo>
+        </div>
+        <nav>
+          <ul>
+            {navTargets.map((target, i) => {
+              return (
+                <li key={i}>
+                  <LinkTo
+                    href={target.url}
+                    {...(target.url === router.pathname && {
+                      className: styles.active,
+                    })}
+                  >
+                    {target.text}
+                  </LinkTo>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </div>
-      <nav>
-        <ul>
-          {navTargets.map((target, i) => {
-            return (
-              <li key={i}>
-                <LinkTo
-                  href={target.url}
-                  {...(target.url === router.pathname && {
-                    className: styles.active,
-                  })}
-                >
-                  {target.text}
-                </LinkTo>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
     </header>
   );
 }

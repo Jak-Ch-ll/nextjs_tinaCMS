@@ -8,14 +8,15 @@ datasource db {
 }
 
 model Article {
-  id          Int      @id @default(autoincrement())
-  title       String   @default("")
-  previewText String   @default("") @map(name: "preview_text")
-  content     String
-  url         String   @unique
-  published   Boolean  @default(false)
-  createdAt   DateTime @default(now()) @map(name: "created_at")
-  updatedAt   DateTime @updatedAt @map(name: "updated_at")
+  id        Int      @id @default(autoincrement())
+  title     String   @default("")
+  teaser    String   @default("")
+  content   String
+  url       String   @unique
+  img       String
+  published Boolean  @default(false)
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
 
   @@map(name: "article")
 }

@@ -1,4 +1,4 @@
-import Home from "./index";
+import Home from "./index.page";
 import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
@@ -8,7 +8,5 @@ describe("The Home Page Component", () => {
     const main = getByRole("main");
 
     expect(main).toBeInTheDocument();
-
-    // expect(2).toBe(2);
   });
 });

@@ -1,18 +1,23 @@
-import { NewArticle } from ".";
+import { NewArticle } from "./index.api";
 import prisma from "../../../../prisma/prisma";
-import fetch, { Body } from "node-fetch";
+import fetch from "node-fetch";
 
 const validArticle: NewArticle = {
   title: "This is a title",
-  previewText: "This is the preview text",
+  teaser: "This is the preview text",
   content: "This is some content",
   url: "this-is-the-url",
+  img: "image.jpg",
 };
 
 const endpoint = "http://localhost:3000/api/v1/articles/";
 
 beforeEach(async () => {
   await prisma.article.deleteMany();
+});
+
+afterEach(() => {
+  prisma.$disconnect();
 });
 
 describe("GET requests to /api/articles/:id", () => {
