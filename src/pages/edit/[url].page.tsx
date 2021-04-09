@@ -1,5 +1,5 @@
 import { Article } from "@prisma/client";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { GetServerSideProps } from "next";
 import { BlogForm } from "../../components/tina/BlogForm";
 import { Tina } from "../../components/tina/Tina";
 import { getArticleToRender } from "../../utils";
@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   }
 };
 
-export default function ArticlePage({ article }: ArticlePageProps) {
+export default function ArticleEditPage({ article }: ArticlePageProps) {
   return (
     <Tina>
       <BlogForm article={article} />

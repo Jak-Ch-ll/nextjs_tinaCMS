@@ -8,8 +8,8 @@ import path from "path";
 import FormData from "form-data";
 import axios from "axios";
 
-import { API_IMAGE_ENDPOINT } from "../_constants";
-import { IMAGE_UPLOAD_DIR } from "../_constants";
+import { API_IMAGE_ENDPOINT } from "../../../_constants";
+import { IMAGE_UPLOAD_DIR } from "../../../_constants";
 
 const endpoint = API_IMAGE_ENDPOINT;
 const uploadDir = IMAGE_UPLOAD_DIR;

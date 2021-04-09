@@ -2,9 +2,9 @@
  * @jest-environment node
  */
 
-import { NewArticle } from "../_types";
+import { NewArticle } from "../../../_types";
+import { API_ARTICLE_ENDPOINT } from "../../../_constants";
 import prisma from "../../../../prisma/prisma";
-import { API_ARTICLE_ENDPOINT } from "../_constants";
 import fetch from "node-fetch";
 import axios from "axios";
 

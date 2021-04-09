@@ -6,9 +6,7 @@ import {
   MediaUploadOptions,
 } from "@tinacms/core";
 import axios from "axios";
-import { API_IMAGE_ENDPOINT_INTERNAL } from "../../pages/api/_constants";
-
-const endpoint = API_IMAGE_ENDPOINT_INTERNAL;
+import { API_IMAGE_ENDPOINT_INTERNAL as endpoint } from "../../_constants";
 
 // https://tina.io/docs/media/
 

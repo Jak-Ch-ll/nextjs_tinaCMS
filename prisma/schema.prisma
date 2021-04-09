@@ -11,9 +11,12 @@ model Article {
   id        Int      @id @default(autoincrement())
   title     String   @default("")
   teaser    String   @default("")
-  content   String
+  content   String   @default("")
   url       String   @unique
-  img       String
+  autoURL   Boolean  @default(true) @map(name: "auto_url")
+  img       String   @default("")
+  imgAlt    String   @default("") @map(name: "img_alt")
+  imgTitle  String   @default("") @map(name: "img_title")
   published Boolean  @default(false)
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")

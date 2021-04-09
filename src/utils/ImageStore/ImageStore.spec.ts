@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ImageStore } from "./ImageStore";
-import { API_IMAGE_ENDPOINT_INTERNAL } from "../../pages/api/_constants";
+import { API_IMAGE_ENDPOINT_INTERNAL } from "../../_constants";
 
 const endpoint = API_IMAGE_ENDPOINT_INTERNAL;
 

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 import fs from "fs/promises";
-import { IMAGE_UPLOAD_DIR } from "../_constants";
+import { IMAGE_UPLOAD_DIR } from "../../../_constants";
 
 const uploadDir = IMAGE_UPLOAD_DIR;
 

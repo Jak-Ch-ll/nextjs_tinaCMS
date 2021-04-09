@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "article" ADD COLUMN     "auto_url" BOOLEAN DEFAULT true,
+ADD COLUMN     "img_alt" TEXT NOT NULL DEFAULT E'',
+ADD COLUMN     "img_title" TEXT DEFAULT E'',
+ALTER COLUMN "content" SET DEFAULT E'',
+ALTER COLUMN "published" DROP NOT NULL,
+ALTER COLUMN "img" SET DEFAULT E'';

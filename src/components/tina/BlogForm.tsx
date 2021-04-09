@@ -1,6 +1,5 @@
-import { Article } from "@prisma/client";
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { InlineWysiwyg } from "react-tinacms-editor";
 import {
@@ -9,9 +8,13 @@ import {
   InlineText,
   InlineTextarea,
 } from "react-tinacms-inline";
+import slugify from "slugify";
 import { useForm, usePlugin } from "tinacms";
-import { API_ARTICLE_ENDPOINT_INTERNAL as endpoint } from "../../pages/api/_constants";
-import { ArticleToRender } from "../../types";
+import {
+  API_ARTICLE_ENDPOINT_INTERNAL as endpoint,
+  API_IMAGE_ENDPOINT_INTERNAL,
+} from "../../_constants";
+import { ArticleInForm, ArticleToRender } from "../../_types";
 
 import styles from "./BlogForm.module.scss";
 
@@ -30,20 +33,16 @@ export const BlogForm = ({ article }: FormProps) => {
 
   const getInitialValues = () => {
     if (article) {
-      const { published, url, title, teaser, img, content } = article;
+      const values: any = { ...article };
 
-      return {
-        published,
-        url,
-        title,
-        teaser,
-        img,
-        content,
-      };
+      delete values.createdAt;
+      delete values.updatedAt;
+
+      return values as ArticleInForm;
     }
   };
 
-  const [data, form] = useForm<ArticleToRender>({
+  const [data, form] = useForm<ArticleInForm>({
     id: "New Blogpost",
     label: "New Blogpost",
     onSubmit,
@@ -57,13 +56,71 @@ export const BlogForm = ({ article }: FormProps) => {
         description: "Check to publish article",
       },
       {
-        name: "url",
-        label: "URL",
-        component: "text",
-        description: "The URL after www.homepage.de/blog/",
+        name: "_",
+        component: () => <h4>URL</h4>,
       },
+      {
+        name: "url",
+        label: "The URL after www.homepage.de/blog/",
+        component: "text",
+      },
+      {
+        name: "autoURL",
+        label: "Auto URL",
+        component: "toggle",
+        defaultValue: true,
+      },
+      {
+        name: "Image",
+        component: () => <h4>Image</h4>,
+      },
+      {
+        name: "imgAlt",
+        label: "Alternative text",
+        component: "text",
+      },
+      {
+        name: "imgTitle",
+        label: "Image title",
+        component: "text",
+      },
+      // {
+      //   name: "img",
+      //   label: "Preview Image",
+      //   component: "image",
+      //   parse: (media) => media.id,
+      // },
     ],
   });
+
+  // enable/disable url field
+  useEffect(() => {
+    const field = document.querySelector<HTMLInputElement>("input[name='url']");
+    console.log(data.autoURL);
+
+    if (data.autoURL) {
+      return field?.setAttribute("disabled", "");
+    }
+    return field?.removeAttribute("disabled");
+  }, [data.autoURL]);
+
+  const updateUrl = () => {};
+
+  // auto update url
+  useEffect(() => {
+    console.log("Triggered!");
+    if (data.autoURL) {
+      const title = data.title || "";
+      const url = slugify(title, {
+        lower: true,
+        strict: true,
+      });
+
+      form.updateValues({
+        url,
+      });
+    }
+  }, [data.autoURL, data.title, form]);
 
   usePlugin(form);
 
@@ -76,13 +133,21 @@ export const BlogForm = ({ article }: FormProps) => {
         <p>
           <InlineTextarea name="teaser" placeholder="And some teaser text" />
         </p>
+        {/* <TinaImage name="img" /> */}
         <InlineImage
           className={styles.imgContainer}
           name="img"
           parse={(media) => media.id}
         />
         <p>
-          <InlineWysiwyg name="content" format="markdown">
+          <InlineWysiwyg
+            name="content"
+            format="markdown"
+            imageProps={{
+              parse: (media) => `${API_IMAGE_ENDPOINT_INTERNAL}/${media.id}`,
+              previewSrc: (url) => url,
+            }}
+          >
             <ReactMarkdown source={data.content} />
           </InlineWysiwyg>
         </p>

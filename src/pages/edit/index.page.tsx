@@ -1,20 +1,16 @@
-import { Article, Prisma } from "@prisma/client";
 import axios from "axios";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useState } from "react";
-import prisma from "../../../prisma/prisma";
 import LinkTo from "../../components/LinkTo";
-import { ArticleToRender } from "../../types";
+import { ArticleToRender } from "../../_types";
 import { getArticlesToRender } from "../../utils";
-import { API_ARTICLE_ENDPOINT_INTERNAL } from "../api/_constants";
+import { API_ARTICLE_ENDPOINT_INTERNAL } from "../../_constants";
 
 interface TinaPageProps {
   articles: ArticleToRender[];
 }
 
-export const getServerSideProps: GetServerSideProps<TinaPageProps> = async (
-  context
-) => {
+export const getServerSideProps: GetServerSideProps<TinaPageProps> = async () => {
   const articles = await getArticlesToRender();
 
   return {

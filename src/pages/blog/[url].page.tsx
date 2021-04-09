@@ -1,9 +1,8 @@
 import { Article } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import ReactMarkdown from "react-markdown";
-import { BlogForm } from "../../components/tina/BlogForm";
-import { Tina } from "../../components/tina/Tina";
 import { getArticleToRender } from "../../utils";
+import { API_IMAGE_ENDPOINT_INTERNAL } from "../../_constants";
 
 interface ArticleToRender extends Omit<Article, "createdAt" | "updatedAt"> {
   createdAt: string;
@@ -36,6 +35,10 @@ export default function ArticlePage({ article }: ArticlePageProps) {
   return (
     <div className="max-width">
       <h1>{article.title}</h1>
+      <img
+        src={`${API_IMAGE_ENDPOINT_INTERNAL}/${article.img}`}
+        alt="Some alt text"
+      />
       <p>{article.teaser}</p>
       <ReactMarkdown children={article.content} />
     </div>

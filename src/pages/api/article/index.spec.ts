@@ -3,10 +3,11 @@
  */
 
 import fetch from "node-fetch";
-import { NewArticle } from "../_types";
-import prisma from "../../../../prisma/prisma";
 import axios from "axios";
-import { API_ARTICLE_ENDPOINT } from "../_constants";
+
+import prisma from "../../../../prisma/prisma";
+import { NewArticle } from "../../../_types";
+import { API_ARTICLE_ENDPOINT } from "../../../_constants";
 
 const validArticle: NewArticle = {
   title: "This is a title",
