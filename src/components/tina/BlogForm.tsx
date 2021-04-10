@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { InlineWysiwyg } from "react-tinacms-editor";
@@ -9,7 +10,7 @@ import {
   InlineTextarea,
 } from "react-tinacms-inline";
 import slugify from "slugify";
-import { useForm, usePlugin } from "tinacms";
+import { useCMS, useForm, usePlugin } from "tinacms";
 import {
   API_ARTICLE_ENDPOINT_INTERNAL as endpoint,
   API_IMAGE_ENDPOINT_INTERNAL,
@@ -23,12 +24,27 @@ interface FormProps {
 }
 
 export const BlogForm = ({ article }: FormProps) => {
-  const onSubmit = async (formData: any) => {
+  const cms = useCMS();
+  const router = useRouter();
+
+  const onSubmit = async (formData: ArticleInForm) => {
     console.log(formData);
-    if (article) {
-      return await axios.patch(`${endpoint}/${article.id}`, formData);
+
+    try {
+      if (article) {
+        await axios.patch(`${endpoint}/${article.id}`, formData);
+        return cms.alerts.success("Changes saved");
+      }
+      await axios.post(endpoint, formData);
+      cms.alerts.success("Article saved");
+      setTimeout(() => {
+        router.push(formData.url);
+      }, 500);
+    } catch {
+      return cms.alerts.error(
+        "Sorry, something went wrong. Please try again later"
+      );
     }
-    return await axios.post(endpoint, formData);
   };
 
   const getInitialValues = () => {
@@ -54,6 +70,21 @@ export const BlogForm = ({ article }: FormProps) => {
         component: "toggle",
         defaultValue: false,
         description: "Check to publish article",
+        validate: (value, { title, teaser, img, content }) => {
+          if (value && !(title && teaser && img && content)) {
+            return (
+              <>
+                <div>Missing the following:</div>
+                <ul>
+                  {!title && <li>The title</li>}
+                  {!teaser && <li>The teaser text</li>}
+                  {!img && <li>The teaser image</li>}
+                  {!content && <li>The content</li>}
+                </ul>
+              </>
+            );
+          }
+        },
       },
       {
         name: "_",
@@ -63,6 +94,9 @@ export const BlogForm = ({ article }: FormProps) => {
         name: "url",
         label: "The URL after www.homepage.de/blog/",
         component: "text",
+        validate: (value) => {
+          if (!value) return "URL can not be empty";
+        },
       },
       {
         name: "autoURL",
@@ -71,25 +105,25 @@ export const BlogForm = ({ article }: FormProps) => {
         defaultValue: true,
       },
       {
-        name: "Image",
-        component: () => <h4>Image</h4>,
+        name: "Teaser image",
+        component: () => <h4>Teaser image</h4>,
+      },
+      {
+        name: "img",
+        label: "Image",
+        component: "image",
+        parse: (media) => media.id,
       },
       {
         name: "imgAlt",
-        label: "Alternative text",
+        label: "Image description (alt-text)",
         component: "text",
       },
       {
         name: "imgTitle",
-        label: "Image title",
+        label: "Title",
         component: "text",
       },
-      // {
-      //   name: "img",
-      //   label: "Preview Image",
-      //   component: "image",
-      //   parse: (media) => media.id,
-      // },
     ],
   });
 
