@@ -1,6 +1,9 @@
 module.exports = {
-  pageExtensions: ["page.tsx", "api.ts"],
+  pageExtensions: ["page.tsx", "home.page.tsx", "api.ts"],
   future: {
     webpack5: true,
+  },
+  images: {
+    domains: ["localhost"],
   },
 };
