@@ -14,28 +14,28 @@ export class ImageStore implements MediaStore {
   accept = "image/*";
 
   async persist(options: MediaUploadOptions[]): Promise<Media[]> {
-    const media: Media[] = [];
-
-    options.forEach(async (option) => {
+    return options.map((option) => {
       const formData = new FormData();
       formData.append(option.file.name, option.file);
 
-      const res = await axios.post(endpoint, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      axios
+        .post(endpoint, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .catch((err) => {
+          throw new Error(err);
+        });
 
-      media.push({
+      return {
         type: "file",
         id: option.file.name,
         directory: `media/test`,
         filename: option.file.name,
         previewSrc: `${endpoint}/${option.file.name}`,
-      });
+      };
     });
-
-    return media;
   }
 
   async previewSrc(src: string) {
