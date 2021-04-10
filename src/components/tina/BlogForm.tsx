@@ -28,8 +28,6 @@ export const BlogForm = ({ article }: FormProps) => {
   const router = useRouter();
 
   const onSubmit = async (formData: ArticleInForm) => {
-    console.log(formData);
-
     try {
       if (article) {
         await axios.patch(`${endpoint}/${article.id}`, formData);
@@ -40,10 +38,8 @@ export const BlogForm = ({ article }: FormProps) => {
       setTimeout(() => {
         router.push(formData.url);
       }, 500);
-    } catch {
-      return cms.alerts.error(
-        "Sorry, something went wrong. Please try again later"
-      );
+    } catch (err) {
+      return cms.alerts.error(err.response.statusText);
     }
   };
 
