@@ -2,11 +2,21 @@
 
 .banner {
   position: fixed;
-  width: 100vw;
+  z-index: 1;
+
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.1)
+  );
+  backdrop-filter: blur(8px);
 
   .container {
-    margin: 0 auto;
     max-width: $max-width;
+    flex-grow: 1;
 
     display: flex;
     justify-content: space-between;

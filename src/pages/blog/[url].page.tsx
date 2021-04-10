@@ -1,10 +1,14 @@
 import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import prisma from "../../../prisma/prisma";
 import { getArticleToRender } from "../../utils";
 import { API_IMAGE_ENDPOINT_INTERNAL } from "../../_constants";
 import { ArticleToRender } from "../../_types";
+
+import styles from "./[url].module.scss";
+import { BlogImage } from "../../components/tina/BlogImage";
 
 interface ArticlePageProps {
   article: ArticleToRender;
@@ -52,15 +56,21 @@ export default function ArticlePage({ article }: ArticlePageProps) {
     return <div>Loading...</div>;
   }
 
+  const markdownRenderers = {
+    image: ({ src, alt = "" }: { src: string; alt: string }) => {
+      return <BlogImage src={`http://localhost:3000${src}`} alt={alt} />;
+    },
+  };
+
   return (
-    <div className="max-width">
-      <h1>{article.title}</h1>
-      <img
-        src={`${API_IMAGE_ENDPOINT_INTERNAL}/${article.img}`}
-        alt="Some alt text"
+    <div className={`max-width ${styles.container}`}>
+      <h1 className={styles.title}>{article.title}</h1>
+      <BlogImage
+        src={`http://localhost:3000${API_IMAGE_ENDPOINT_INTERNAL}/${article.img}`}
+        alt={article.imgAlt}
       />
       <p>{article.teaser}</p>
-      <ReactMarkdown children={article.content} />
+      <ReactMarkdown renderers={markdownRenderers} children={article.content} />
     </div>
   );
 }

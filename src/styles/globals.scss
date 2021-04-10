@@ -1,4 +1,5 @@
-@use "properties";
+@use "properties" as *;
+@use "tina";
 
 html,
 body {
@@ -27,7 +28,7 @@ main {
 }
 
 .max-width {
-  max-width: 50rem;
+  max-width: $max-width;
 }
 
 img {

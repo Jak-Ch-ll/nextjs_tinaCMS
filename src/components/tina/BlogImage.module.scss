@@ -1,0 +1,7 @@
+@use "/src/styles/properties.scss" as *;
+
+.container {
+  position: relative;
+  width: 100%;
+  height: calc(min(#{$max-width}, 100vw) / 6 * 4);
+}
