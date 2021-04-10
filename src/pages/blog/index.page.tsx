@@ -1,6 +1,6 @@
 import { GetStaticProps } from "next";
 import Link from "next/link";
-import { ArticleToRender } from "../../types";
+import { ArticleToRender } from "../../_types";
 import { getArticlesToRender } from "../../utils";
 
 interface BlogPageProps {
@@ -14,6 +14,7 @@ export const getStaticProps: GetStaticProps<BlogPageProps> = async () => {
     props: {
       articles,
     },
+    revalidate: 1,
   };
 };
 

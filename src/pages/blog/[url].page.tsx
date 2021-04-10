@@ -1,19 +1,18 @@
-import { Article } from "@prisma/client";
-import { GetServerSideProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
+import { useRouter } from "next/router";
 import ReactMarkdown from "react-markdown";
+import prisma from "../../../prisma/prisma";
 import { getArticleToRender } from "../../utils";
 import { API_IMAGE_ENDPOINT_INTERNAL } from "../../_constants";
-
-interface ArticleToRender extends Omit<Article, "createdAt" | "updatedAt"> {
-  createdAt: string;
-  updatedAt: string;
-}
+import { ArticleToRender } from "../../_types";
 
 interface ArticlePageProps {
   article: ArticleToRender;
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps<ArticlePageProps> = async ({
+  params,
+}) => {
   const url = params!.url as string;
 
   try {
@@ -23,15 +22,36 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       props: {
         article,
       },
+      revalidate: 1,
     };
   } catch {
     return {
       notFound: true,
+      revalidate: 1,
     };
   }
 };
 
+export const getStaticPaths: GetStaticPaths = async () => {
+  const articles = await prisma.article.findMany();
+
+  const paths = articles.map(({ url }) => ({
+    params: { url },
+  }));
+
+  return {
+    paths,
+    fallback: true,
+  };
+};
+
 export default function ArticlePage({ article }: ArticlePageProps) {
+  const router = useRouter();
+
+  if (router.isFallback) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="max-width">
       <h1>{article.title}</h1>
