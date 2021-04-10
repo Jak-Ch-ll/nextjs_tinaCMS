@@ -10,6 +10,6 @@ export const API_IMAGE_ENDPOINT_INTERNAL = `${API_ENDPOINT_INTERNAL}/image`;
 
 export const IMAGE_UPLOAD_DIR = path.join(
   process.cwd(),
-  "imageDB",
+  "image_db",
   process.env.NODE_ENV === "production" ? "upload_prod" : "upload_dev"
 );
