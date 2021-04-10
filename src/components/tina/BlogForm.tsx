@@ -39,7 +39,8 @@ export const BlogForm = ({ article }: FormProps) => {
         router.push(formData.url);
       }, 500);
     } catch (err) {
-      return cms.alerts.error(err.response.statusText);
+      cms.alerts.error(err.response.statusText);
+      throw new Error();
     }
   };
 
@@ -133,8 +134,6 @@ export const BlogForm = ({ article }: FormProps) => {
     }
     return field?.removeAttribute("disabled");
   }, [data.autoURL]);
-
-  const updateUrl = () => {};
 
   // auto update url
   useEffect(() => {
