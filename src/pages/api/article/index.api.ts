@@ -1,8 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 import prisma from "../../../../prisma/prisma";
+import { validateSession } from "../../../utils/api";
 
 export default nc<NextApiRequest, NextApiResponse>()
+  .use(validateSession)
   .get(async (req, res) => {
     const articles = await prisma.article.findMany();
 

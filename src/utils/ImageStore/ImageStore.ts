@@ -6,6 +6,7 @@ import {
   MediaUploadOptions,
 } from "@tinacms/core";
 import axios from "axios";
+import slugify from "slugify";
 import { API_IMAGE_ENDPOINT_INTERNAL as endpoint } from "../../_constants";
 
 // https://tina.io/docs/media/
@@ -28,6 +29,10 @@ export class ImageStore implements MediaStore {
           throw new Error(err);
         });
 
+      const name = slugify(option.file.name, {
+        lower: true,
+      });
+
       return {
         type: "file",
         id: option.file.name,
@@ -39,6 +44,7 @@ export class ImageStore implements MediaStore {
   }
 
   async previewSrc(src: string) {
+    if (!src) return "";
     return `${endpoint}/${src}`;
   }
 
@@ -72,6 +78,6 @@ export class ImageStore implements MediaStore {
   }
 
   async delete(media: Media) {
-    axios.delete(`${endpoint}/${media.filename}`);
+    await axios.delete(`${endpoint}/${media.filename}`);
   }
 }

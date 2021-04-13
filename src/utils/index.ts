@@ -32,3 +32,12 @@ export const getArticlesToRender = async () => {
 
   return articles.map(articleToDateString);
 };
+
+export const redirectOnNoAccess = () => {
+  return {
+    redirect: {
+      destination: "/auth",
+      permanent: false,
+    },
+  };
+};

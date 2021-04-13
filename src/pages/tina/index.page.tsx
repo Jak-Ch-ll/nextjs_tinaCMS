@@ -1,16 +1,22 @@
 import axios from "axios";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useState } from "react";
+import { getSession, signIn } from "next-auth/client";
 import LinkTo from "../../components/LinkTo";
 import { ArticleToRender } from "../../_types";
-import { getArticlesToRender } from "../../utils";
+import { getArticlesToRender, redirectOnNoAccess } from "../../utils";
 import { API_ARTICLE_ENDPOINT_INTERNAL } from "../../_constants";
 
 interface TinaPageProps {
   articles: ArticleToRender[];
 }
 
-export const getServerSideProps: GetServerSideProps<TinaPageProps> = async () => {
+export const getServerSideProps: GetServerSideProps<TinaPageProps> = async (
+  context
+) => {
+  const session = await getSession(context);
+  if (!session) return redirectOnNoAccess();
+
   const articles = await getArticlesToRender();
 
   return {
@@ -54,10 +60,14 @@ export default function TinaPage(
     );
   });
 
+  // const [session, loading] = useSession();
+
   return (
-    <main>
+    <>
       <div>Hello, this is Tina</div>
       <LinkTo href="/edit/new">New Article</LinkTo>
+      {/* <div>You are {!loading && !session && "not"} signed in</div> */}
+      <button onClick={() => signIn()}>Sign in</button>
 
       <h2>All articles:</h2>
       <table>
@@ -73,6 +83,6 @@ export default function TinaPage(
         </thead>
         <tbody>{renderedArticles}</tbody>
       </table>
-    </main>
+    </>
   );
 }

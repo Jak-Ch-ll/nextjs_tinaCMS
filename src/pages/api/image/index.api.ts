@@ -3,6 +3,8 @@ import nc from "next-connect";
 import fs from "fs/promises";
 import { IncomingForm } from "formidable";
 import { IMAGE_UPLOAD_DIR } from "../../../_constants";
+import { validateSession } from "../../../utils/api";
+import slugify from "slugify";
 
 const uploadDir = IMAGE_UPLOAD_DIR;
 
@@ -13,6 +15,7 @@ export const config = {
 };
 
 export default nc<NextApiRequest, NextApiResponse>()
+  .use(validateSession)
   .get(async (req, res) => {
     const imageNames = await fs.readdir(uploadDir);
 
@@ -25,9 +28,12 @@ export default nc<NextApiRequest, NextApiResponse>()
       keepExtensions: true,
     });
     form.on("fileBegin", (_, file) => {
-      file.path = `${uploadDir}/${file.name}`;
+      const name = slugify(file.name!, {
+        lower: true,
+      });
+      file.path = `${uploadDir}/${name}`;
       res.writeHead(201, {
-        location: `/api/v1/images/${file.name}`,
+        location: `/api/v1/images/${name}`,
       });
     });
     form.parse(req, (err, fields, files) => {

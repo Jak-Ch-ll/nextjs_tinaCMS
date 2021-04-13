@@ -13,7 +13,6 @@ import slugify from "slugify";
 import { useCMS, useForm, usePlugin } from "tinacms";
 import {
   API_ARTICLE_ENDPOINT_INTERNAL as endpoint,
-  API_IMAGE_ENDPOINT,
   API_IMAGE_ENDPOINT_INTERNAL,
 } from "../../_constants";
 import { ArticleInForm, ArticleToRender } from "../../_types";
@@ -170,9 +169,12 @@ export const BlogForm = ({ article }: FormProps) => {
           name="img"
           parse={(media) => media.id}
         >
-          {({ src }) =>
-            src && <BlogImage src={`http://localhost:3000${src}`} alt="" />
-          }
+          {({ src }) => {
+            console.log(src);
+            return (
+              src && <BlogImage src={`http://localhost:3000${src}`} alt="" />
+            );
+          }}
         </InlineImage>
         <p>
           <InlineWysiwyg

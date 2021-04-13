@@ -1,12 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 import prisma from "../../../../prisma/prisma";
+import { validateSession } from "../../../utils/api";
 
 const getId = (req: NextApiRequest) => {
   return parseInt(req.query.id as string);
 };
 
 const handler = nc<NextApiRequest, NextApiResponse>()
+  .use(validateSession)
   .get(async (req, res) => {
     const id = parseInt(req.query.id as string);
     const article = await prisma.article.findUnique({ where: { id } });

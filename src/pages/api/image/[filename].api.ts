@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 import fs from "fs/promises";
 import { IMAGE_UPLOAD_DIR } from "../../../_constants";
+import { validateSession } from "../../../utils/api";
 
 const uploadDir = IMAGE_UPLOAD_DIR;
 
@@ -22,7 +23,7 @@ export default nc<NextApiRequest, NextApiResponse>()
     }
   })
 
-  .delete(async (req, res) => {
+  .delete(validateSession, async (req, res) => {
     const { filename } = req.query;
     try {
       await fs.rm(`${uploadDir}/${filename}`);
@@ -32,6 +33,6 @@ export default nc<NextApiRequest, NextApiResponse>()
     }
   })
 
-  .all((req, res) => {
+  .all(validateSession, (req, res) => {
     return res.status(405).end();
   });
