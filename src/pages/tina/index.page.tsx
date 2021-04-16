@@ -51,7 +51,7 @@ export default function TinaPage(
         <td>{article.createdAt}</td>
         <td>{article.updatedAt}</td>
         <td>
-          <LinkTo href={`/edit/${article.url}`}>Update</LinkTo>
+          <LinkTo href={`/tina/${article.url}`}>Update</LinkTo>
         </td>
         <td>
           <button onClick={() => deleteArticle(article.id)}>Delete</button>
@@ -65,7 +65,7 @@ export default function TinaPage(
   return (
     <>
       <div>Hello, this is Tina</div>
-      <LinkTo href="/edit/new">New Article</LinkTo>
+      <LinkTo href="/tina/new">New Article</LinkTo>
       {/* <div>You are {!loading && !session && "not"} signed in</div> */}
       <button onClick={() => signIn()}>Sign in</button>
 
