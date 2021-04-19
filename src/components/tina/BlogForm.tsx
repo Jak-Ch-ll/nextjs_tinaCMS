@@ -156,7 +156,7 @@ export const BlogForm = ({ article }: FormProps) => {
 
   return (
     <InlineForm form={form}>
-      <div className={`max-width ${styles.container}`}>
+      <div className={`${styles.container}`}>
         <h1>
           <InlineText name="title" placeholder="Write an awesome title" />
         </h1>

@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+  gap: 1rem;
+}
+
+.content {
+  max-width: 80%;
+}
+
+.date {
+  color: gray;
+  font-size: 0.9rem;
+}
+
+.title {
+  margin: 0.25rem 0;
+}
+
+.text {
+  margin: 0.25rem 0;
+}
+
+.link {
+  color: red;
+  text-decoration: underline;
+}
+
+.imgBox {
+  flex: 1 0 100%;
+}

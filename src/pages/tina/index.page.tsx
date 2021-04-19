@@ -3,12 +3,15 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useState } from "react";
 import { getSession, signIn } from "next-auth/client";
 import LinkTo from "../../components/LinkTo";
-import { ArticleToRender } from "../../_types";
-import { getArticlesToRender, redirectOnNoAccess } from "../../utils";
 import { API_ARTICLE_ENDPOINT_INTERNAL } from "../../_constants";
+import { ArticleData, ArticleDB } from "../../utils/ArticleDB";
+import { redirectOnNoAccess } from "../../utils";
+import { ArticleTable } from "../../components/tina/ArticleTable";
+import Head from "next/head";
+import { ArticleAPi } from "../../utils/ArticleAPI";
 
 interface TinaPageProps {
-  articles: ArticleToRender[];
+  articles: ArticleData[];
 }
 
 export const getServerSideProps: GetServerSideProps<TinaPageProps> = async (
@@ -17,7 +20,9 @@ export const getServerSideProps: GetServerSideProps<TinaPageProps> = async (
   const session = await getSession(context);
   if (!session) return redirectOnNoAccess();
 
-  const articles = await getArticlesToRender();
+  const db = new ArticleDB();
+
+  const articles = await db.getArticleData();
 
   return {
     props: {
@@ -64,9 +69,9 @@ export default function TinaPage(
 
   return (
     <>
-      <div>Hello, this is Tina</div>
+      {/* <div>Hello, this is Tina</div>
       <LinkTo href="/tina/new">New Article</LinkTo>
-      {/* <div>You are {!loading && !session && "not"} signed in</div> */}
+      {/* <div>You are {!loading && !session && "not"} signed in</div> 
       <button onClick={() => signIn()}>Sign in</button>
 
       <h2>All articles:</h2>
@@ -82,7 +87,14 @@ export default function TinaPage(
           </tr>
         </thead>
         <tbody>{renderedArticles}</tbody>
-      </table>
+      </table> */}
+      <Head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        />
+      </Head>
+      <ArticleTable articles={articles} />
     </>
   );
 }

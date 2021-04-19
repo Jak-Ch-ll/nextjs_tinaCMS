@@ -1,7 +1,12 @@
 import { Article } from "@prisma/client";
 import prisma from "../../prisma/prisma";
 
-const articleToDateString = (article: Article) => {
+// create a helper function to switch out the language easily
+export const toDateString = (date: Date) => {
+  return date.toLocaleDateString();
+};
+
+export const articleToDateString = (article: Article) => {
   return {
     ...article,
     createdAt: article.createdAt.toLocaleDateString(),

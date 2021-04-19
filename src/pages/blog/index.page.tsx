@@ -1,14 +1,15 @@
 import { GetStaticProps } from "next";
-import Link from "next/link";
-import { ArticleToRender } from "../../_types";
-import { getArticlesToRender } from "../../utils";
+import { ArticlePreview } from "../../components/ArticlePreview";
+import { ArticleDB, PreviewArticle } from "../../utils/ArticleDB";
+import styles from "./index.module.scss";
 
 interface BlogPageProps {
-  articles: ArticleToRender[];
+  articles: PreviewArticle[];
 }
 
 export const getStaticProps: GetStaticProps<BlogPageProps> = async () => {
-  const articles = await getArticlesToRender();
+  const db = new ArticleDB();
+  const articles = await db.getPreviewArticles();
 
   return {
     props: {
@@ -21,14 +22,11 @@ export const getStaticProps: GetStaticProps<BlogPageProps> = async () => {
 export default function BlogPage({ articles }: BlogPageProps) {
   const renderedArticles = articles.map((article) => {
     return (
-      <div key={article.id}>
-        <Link href={`/blog/${article.url}`}>
-          {/* eslint-disable-next-line */}
-          <a>{article.title}</a>
-        </Link>
-      </div>
+      <li key={article.id} className={styles.item}>
+        <ArticlePreview article={article} />
+      </li>
     );
   });
 
-  return <div>{renderedArticles}</div>;
+  return <ul className={`max-width ${styles.list}`}>{renderedArticles}</ul>;
 }
