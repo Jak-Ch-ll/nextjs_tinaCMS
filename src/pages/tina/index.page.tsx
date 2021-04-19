@@ -4,14 +4,14 @@ import { useState } from "react";
 import { getSession, signIn } from "next-auth/client";
 import LinkTo from "../../components/LinkTo";
 import { API_ARTICLE_ENDPOINT_INTERNAL } from "../../_constants";
-import { ArticleData, ArticleDB } from "../../utils/ArticleDB";
+import { ArticleTableData, ArticleDB } from "../../utils/ArticleDB";
 import { redirectOnNoAccess } from "../../utils";
 import { ArticleTable } from "../../components/tina/ArticleTable";
 import Head from "next/head";
-import { ArticleAPi } from "../../utils/ArticleAPI";
+import { ArticleAPI } from "../../utils/ArticleAPI";
 
 interface TinaPageProps {
-  articles: ArticleData[];
+  articles: ArticleTableData[];
 }
 
 export const getServerSideProps: GetServerSideProps<TinaPageProps> = async (
@@ -22,7 +22,7 @@ export const getServerSideProps: GetServerSideProps<TinaPageProps> = async (
 
   const db = new ArticleDB();
 
-  const articles = await db.getArticleData();
+  const articles = await db.getArticlesForTable();
 
   return {
     props: {

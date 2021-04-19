@@ -29,6 +29,7 @@ const handler = nc<NextApiRequest, NextApiResponse>()
       });
       return res.status(200).send(article);
     } catch (err) {
+      console.log(err);
       switch (err.code) {
         case "P2025":
           return res.writeHead(400, `Article with id ${id} not found`).end();

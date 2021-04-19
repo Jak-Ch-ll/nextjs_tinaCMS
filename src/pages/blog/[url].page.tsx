@@ -3,16 +3,17 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import prisma from "../../../prisma/prisma";
-import { getArticleToRender } from "../../utils";
 import { API_IMAGE_ENDPOINT_INTERNAL } from "../../_constants";
-import { ArticleToRender } from "../../_types";
 
 import styles from "./[url].module.scss";
 import { BlogImage } from "../../components/tina/BlogImage";
+import { ArticleDB, ArticleRenderData } from "../../utils/ArticleDB";
 
 interface ArticlePageProps {
-  article: ArticleToRender;
+  article: ArticleRenderData;
 }
+
+const articleDB = new ArticleDB();
 
 export const getStaticProps: GetStaticProps<ArticlePageProps> = async ({
   params,
@@ -20,7 +21,7 @@ export const getStaticProps: GetStaticProps<ArticlePageProps> = async ({
   const url = params!.url as string;
 
   try {
-    const article = await getArticleToRender({ url });
+    const article = await articleDB.getPublishedArticleToRender(url);
 
     return {
       props: {
@@ -69,7 +70,7 @@ export default function ArticlePage({ article }: ArticlePageProps) {
         src={`http://localhost:3000${API_IMAGE_ENDPOINT_INTERNAL}/${article.img}`}
         alt={article.imgAlt}
       />
-      <p>{article.teaser}</p>
+      <p>{article.teaserText}</p>
       <ReactMarkdown renderers={markdownRenderers} children={article.content} />
     </div>
   );

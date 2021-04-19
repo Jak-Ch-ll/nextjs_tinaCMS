@@ -11,30 +11,45 @@ import {
 } from "react-tinacms-inline";
 import slugify from "slugify";
 import { useCMS, useForm, usePlugin } from "tinacms";
+import { ArticleAPI } from "../../utils/ArticleAPI";
+import { ArticleFormData } from "../../utils/ArticleDB";
 import {
   API_ARTICLE_ENDPOINT_INTERNAL as endpoint,
   API_IMAGE_ENDPOINT_INTERNAL,
 } from "../../_constants";
-import { ArticleInForm, ArticleToRender } from "../../_types";
+import { NewArticle } from "../../_types";
 
 import styles from "./BlogForm.module.scss";
 import { BlogImage } from "./BlogImage";
 
 interface FormProps {
-  article?: ArticleToRender;
+  article?: ArticleFormData;
+}
+
+interface FormData extends ArticleFormData {
+  published: boolean;
 }
 
 export const BlogForm = ({ article }: FormProps) => {
   const cms = useCMS();
   const router = useRouter();
+  const articleAPI = new ArticleAPI();
 
-  const onSubmit = async (formData: ArticleInForm) => {
+  const onSubmit = async (data: FormData) => {
+    const formData = {
+      ...data,
+      publishedAt: data.published ? new Date() : null,
+    };
+
+    // @ts-ignore
+    delete formData.published;
+
     try {
       if (article) {
-        await axios.patch(`${endpoint}/${article.id}`, formData);
+        await articleAPI.patch(article.id, formData);
         return cms.alerts.success("Changes saved");
       }
-      await axios.post(endpoint, formData);
+      await articleAPI.post(formData);
       cms.alerts.success("Article saved");
       setTimeout(() => {
         router.push(formData.url);
@@ -45,18 +60,14 @@ export const BlogForm = ({ article }: FormProps) => {
     }
   };
 
-  const getInitialValues = () => {
-    if (article) {
-      const values: any = { ...article };
+  const getInitialValues = (): FormData | void => {
+    if (!article) return;
+    const data = { ...article, published: !!article.publishedAt };
 
-      delete values.createdAt;
-      delete values.updatedAt;
-
-      return values as ArticleInForm;
-    }
+    return data;
   };
 
-  const [data, form] = useForm<ArticleInForm>({
+  const [data, form] = useForm<FormData>({
     id: "New Blogpost",
     label: "New Blogpost",
     onSubmit,

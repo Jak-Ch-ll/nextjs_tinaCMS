@@ -1,11 +1,11 @@
-import { ArticleData } from "../../utils/ArticleDB";
+import { ArticleTableData } from "../../utils/ArticleDB";
 import { useRouter } from "next/router";
 import MaterialTable, { Action } from "material-table";
-import { ArticleAPi } from "../../utils/ArticleAPI";
+import { ArticleAPI } from "../../utils/ArticleAPI";
 import { useState } from "react";
 
 export interface ArticleTableProps {
-  articles: ArticleData[];
+  articles: ArticleTableData[];
 }
 
 export const ArticleTable = ({ articles }: ArticleTableProps): JSX.Element => {
@@ -13,7 +13,7 @@ export const ArticleTable = ({ articles }: ArticleTableProps): JSX.Element => {
 
   const router = useRouter();
 
-  const api = new ArticleAPi();
+  const api = new ArticleAPI();
 
   return (
     <MaterialTable
@@ -22,7 +22,7 @@ export const ArticleTable = ({ articles }: ArticleTableProps): JSX.Element => {
         { title: "Title", field: "title" },
         { title: "Created at", field: "createdAt" },
         { title: "Updated at", field: "updatedAt" },
-        { title: "Published", field: "published" },
+        { title: "Published", field: "publishedAt" },
         { title: "URL", field: "url" },
       ]}
       data={tableData}
@@ -32,7 +32,7 @@ export const ArticleTable = ({ articles }: ArticleTableProps): JSX.Element => {
           icon: "edit",
           tooltip: "Edit article",
           onClick: (_, rowData) => {
-            const data = rowData as ArticleData;
+            const data = rowData as ArticleTableData;
             router.push(`/tina/${data.url}`);
           },
         },
@@ -41,7 +41,7 @@ export const ArticleTable = ({ articles }: ArticleTableProps): JSX.Element => {
           icon: "delete",
           tooltip: "Delete article",
           onClick: async (_, rowData) => {
-            const data = rowData as ArticleData;
+            const data = rowData as ArticleTableData;
             try {
               await api.delete(data.id);
               setTableData((tableData) =>

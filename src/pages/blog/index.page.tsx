@@ -1,10 +1,10 @@
 import { GetStaticProps } from "next";
 import { ArticlePreview } from "../../components/ArticlePreview";
-import { ArticleDB, PreviewArticle } from "../../utils/ArticleDB";
+import { ArticleDB, ArticleTeaserData } from "../../utils/ArticleDB";
 import styles from "./index.module.scss";
 
 interface BlogPageProps {
-  articles: PreviewArticle[];
+  articles: ArticleTeaserData[];
 }
 
 export const getStaticProps: GetStaticProps<BlogPageProps> = async () => {
