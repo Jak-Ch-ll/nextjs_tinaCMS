@@ -1,8 +1,10 @@
 import { useRouter } from "next/router";
-import { useState, useEffect, useCallback } from "react";
-import type { Form } from "tinacms";
+import { useState, useEffect } from "react";
+import { Form, useCMS } from "tinacms";
 
 export const useLocalStorage = (form: Form) => {
+  const cms = useCMS();
+
   const path = useRouter().asPath;
   const [storage, setStorage] = useState<Storage>();
 
@@ -14,10 +16,15 @@ export const useLocalStorage = (form: Form) => {
     const localData = localStorage.getItem(path);
 
     if (localData) {
+      cms.alerts.info(
+        "Loading unsaved changes from last time, use reset in the sidebar to delete",
+        10000
+      );
+
       const parsedData: FormData = JSON.parse(localData);
       form.updateValues(parsedData);
     }
-  }, [path, form]);
+  }, [path, form, cms]);
 
   // change local storage on value change
   useEffect(() => {
