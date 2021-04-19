@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
@@ -13,14 +12,11 @@ import slugify from "slugify";
 import { useCMS, useForm, usePlugin } from "tinacms";
 import { ArticleAPI } from "../../utils/ArticleAPI";
 import { ArticleFormData } from "../../utils/ArticleDB";
-import {
-  API_ARTICLE_ENDPOINT_INTERNAL as endpoint,
-  API_IMAGE_ENDPOINT_INTERNAL,
-} from "../../_constants";
-import { NewArticle } from "../../_types";
+import { API_IMAGE_ENDPOINT_INTERNAL } from "../../_constants";
 
 import styles from "./BlogForm.module.scss";
 import { BlogImage } from "./BlogImage";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 interface FormProps {
   article?: ArticleFormData;
@@ -45,12 +41,11 @@ export const BlogForm = ({ article }: FormProps) => {
     delete formData.published;
 
     try {
-      if (article) {
-        await articleAPI.patch(article.id, formData);
-        return cms.alerts.success("Changes saved");
-      }
-      await articleAPI.post(formData);
+      if (article) await articleAPI.patch(article.id, formData);
+      else await articleAPI.post(formData);
+
       cms.alerts.success("Article saved");
+
       setTimeout(() => {
         router.push(formData.url);
       }, 500);
@@ -136,6 +131,8 @@ export const BlogForm = ({ article }: FormProps) => {
     ],
   });
 
+  useLocalStorage(form);
+
   // enable/disable url field
   useEffect(() => {
     const field = document.querySelector<HTMLInputElement>("input[name='url']");
@@ -172,7 +169,10 @@ export const BlogForm = ({ article }: FormProps) => {
           <InlineText name="title" placeholder="Write an awesome title" />
         </h1>
         <p>
-          <InlineTextarea name="teaser" placeholder="And some teaser text" />
+          <InlineTextarea
+            name="teaserText"
+            placeholder="And some teaser text"
+          />
         </p>
         {/* <TinaImage name="img" /> */}
         <InlineImage
