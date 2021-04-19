@@ -30,7 +30,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime? @map(name: "email_verified")
   createdAt     DateTime  @default(now()) @map(name: "created_at")
-  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
+  updatedAt     DateTime  @updatedAt @map(name: "updated_at")
 
   @@map(name: "user")
 }
@@ -42,7 +42,7 @@ model Session {
   sessionToken String   @unique @map(name: "session_token")
   accessToken  String   @unique @map(name: "access_token")
   createdAt    DateTime @default(now()) @map(name: "created_at")
-  updatedAt    DateTime @default(now()) @map(name: "updated_at")
+  updatedAt    DateTime @updatedAt @map(name: "updated_at")
 
   @@map(name: "session")
 }
@@ -53,7 +53,7 @@ model VerificationRequest {
   token      String   @unique
   expires    DateTime
   createdAt  DateTime @default(now()) @map(name: "created_at")
-  updatedAt  DateTime @default(now()) @map(name: "updated_at")
+  updatedAt  DateTime @updatedAt @map(name: "updated_at")
 
   @@map(name: "verification_request")
 }
