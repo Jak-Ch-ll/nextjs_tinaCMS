@@ -8,7 +8,6 @@ import {
   InlineText,
   InlineTextarea,
 } from "react-tinacms-inline";
-import slugify from "slugify";
 import { useCMS, useForm, usePlugin } from "tinacms";
 import { ArticleAPI } from "../../utils/ArticleAPI";
 import { ArticleFormData } from "../../utils/ArticleDB";
@@ -16,6 +15,7 @@ import { API_IMAGE_ENDPOINT_INTERNAL } from "../../_constants";
 
 import styles from "./BlogForm.module.scss";
 import { BlogImage } from "./BlogImage";
+import { useAutoURL } from "./hooks/useAutoURL";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 
 interface FormProps {
@@ -63,8 +63,8 @@ export const BlogForm = ({ article }: FormProps) => {
   };
 
   const [data, form] = useForm<FormData>({
-    id: "New Blogpost",
-    label: "New Blogpost",
+    id: "blogpost",
+    label: "Blogpost",
     onSubmit,
     initialValues: getInitialValues(),
     fields: [
@@ -74,14 +74,14 @@ export const BlogForm = ({ article }: FormProps) => {
         component: "toggle",
         defaultValue: false,
         description: "Check to publish article",
-        validate: (value, { title, teaser, img, content }) => {
-          if (value && !(title && teaser && img && content)) {
+        validate: (value, { title, teaserText, img, content }) => {
+          if (value && !(title && teaserText && img && content)) {
             return (
               <>
                 <div>Missing the following:</div>
                 <ul>
                   {!title && <li>The title</li>}
-                  {!teaser && <li>The teaser text</li>}
+                  {!teaserText && <li>The teaser text</li>}
                   {!img && <li>The teaser image</li>}
                   {!content && <li>The content</li>}
                 </ul>
@@ -132,33 +132,7 @@ export const BlogForm = ({ article }: FormProps) => {
   });
 
   useLocalStorage(form);
-
-  // enable/disable url field
-  useEffect(() => {
-    const field = document.querySelector<HTMLInputElement>("input[name='url']");
-    console.log(data.autoURL);
-
-    if (data.autoURL) {
-      return field?.setAttribute("disabled", "");
-    }
-    return field?.removeAttribute("disabled");
-  }, [data.autoURL]);
-
-  // auto update url
-  useEffect(() => {
-    console.log("Triggered!");
-    if (data.autoURL) {
-      const title = data.title || "";
-      const url = slugify(title, {
-        lower: true,
-        strict: true,
-      });
-
-      form.updateValues({
-        url,
-      });
-    }
-  }, [data.autoURL, data.title, form]);
+  useAutoURL(form, form.values.autoURL);
 
   usePlugin(form);
 
@@ -181,7 +155,6 @@ export const BlogForm = ({ article }: FormProps) => {
           parse={(media) => media.id}
         >
           {({ src }) => {
-            console.log(src);
             return (
               src && <BlogImage src={`http://localhost:3000${src}`} alt="" />
             );
