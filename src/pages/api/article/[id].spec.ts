@@ -10,7 +10,7 @@ import axios from "axios";
 
 const validArticle: NewArticle = {
   title: "This is a title",
-  teaser: "This is the preview text",
+  teaserText: "This is the preview text",
   content: "This is some content",
   url: "this-is-the-url",
   img: "image.jpg",
