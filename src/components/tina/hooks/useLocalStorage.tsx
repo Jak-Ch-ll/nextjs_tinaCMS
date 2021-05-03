@@ -1,39 +1,52 @@
-import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
-import { Form, useCMS } from "tinacms";
+import { useRouter } from "next/router"
+import { useState, useEffect } from "react"
+import { Form, useCMS } from "tinacms"
 
 export const useLocalStorage = (form: Form) => {
-  const cms = useCMS();
+  const cms = useCMS()
 
-  const path = useRouter().asPath;
-  const [storage, setStorage] = useState<Storage>();
+  const path = useRouter().asPath
+  const [storage, setStorage] = useState<Storage>()
 
   // get access to localStorage
   useEffect(() => {
-    const localStorage = window.localStorage;
-    setStorage(localStorage);
+    const localStorage = window.localStorage
+    setStorage(localStorage)
 
-    const localData = localStorage.getItem(path);
+    const localData = localStorage.getItem(path)
 
     if (localData) {
-      cms.alerts.info(
-        "Loading unsaved changes from last time, use reset in the sidebar to delete",
-        10000
-      );
+      const parsedData: FormData = JSON.parse(localData)
+      form.updateValues(parsedData)
 
-      const parsedData: FormData = JSON.parse(localData);
-      form.updateValues(parsedData);
+      if (form.dirty) {
+        cms.alerts.info(
+          "Loading unsaved changes from last time, use reset in the sidebar to delete",
+          10000
+        )
+      }
     }
-  }, [path, form, cms]);
+  }, [path, form, cms])
 
   // change local storage on value change
   useEffect(() => {
-    const json = JSON.stringify(form.values);
-    storage?.setItem(path, json);
+    const json = JSON.stringify(form.values)
+    storage?.setItem(path, json)
+  }, [form.values, storage, path])
 
-    // clean local storage on unmount, if no changes occured or form was saved
+  // cleanup local storage on unmount or window cloase if no changes occured (or if they were saved)
+  useEffect(() => {
+    const cleanup = () => {
+      if (!form.dirty) storage?.removeItem(path)
+    }
+
+    // runs on window/tab/browser close
+    window.addEventListener("beforeunload", cleanup)
+
     return () => {
-      if (!form.dirty) storage?.removeItem(path);
-    };
-  }, [form.values, form.dirty, storage, path]);
-};
+      // run cleanup on unmount
+      cleanup()
+      window.removeEventListener("beforeunload", cleanup)
+    }
+  }, [form.dirty, storage, path])
+}
