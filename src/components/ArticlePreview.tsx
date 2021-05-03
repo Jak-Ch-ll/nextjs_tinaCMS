@@ -1,10 +1,11 @@
-import Image from "next/image";
-import { ArticleTeaserData } from "../utils/ArticleDB";
-import LinkTo from "./LinkTo";
-import styles from "./ArticlePreview.module.scss";
+import Image from "next/image"
+import { ArticleTeaserData } from "../utils/ArticleDB"
+import LinkTo from "./LinkTo"
+import styles from "./ArticlePreview.module.scss"
+import { DateTime } from "./DateTime"
 
 export interface ArticlePreviewProps {
-  article: ArticleTeaserData;
+  article: ArticleTeaserData
 }
 
 export const ArticlePreview = ({
@@ -13,7 +14,7 @@ export const ArticlePreview = ({
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <div className={styles.date}>{article.publishedAt}</div>
+        <DateTime date={article.publishedAt} />
         <h3 className={styles.title}>{article.title}</h3>
         <p className={styles.text}>{article.teaserText}</p>
         <LinkTo className={styles.link} href={`/blog/${article.url}`}>
@@ -30,5 +31,5 @@ export const ArticlePreview = ({
         />
       </div>
     </div>
-  );
-};
+  )
+}

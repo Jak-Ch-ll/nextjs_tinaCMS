@@ -1,40 +1,39 @@
-import { Article, Prisma } from "@prisma/client";
-import { toDateString } from ".";
-import prisma from "../../prisma/prisma";
-import { API_IMAGE_ENDPOINT } from "../_constants";
+import { Article, Prisma } from "@prisma/client"
+import prisma from "../../prisma/prisma"
+import { API_IMAGE_ENDPOINT } from "../_constants"
 
-type ArticleBase = Pick<Article, "id" | "url" | "title">;
+type ArticleBase = Pick<Article, "id" | "url" | "title">
 
 export interface ArticleTeaserData extends ArticleBase {
-  publishedAt: string;
-  teaserText: string;
-  img: string;
+  publishedAt: string
+  teaserText: string
+  img: string
 }
 
 export interface ArticleTableData extends ArticleBase {
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string | null;
+  createdAt: string
+  updatedAt: string
+  publishedAt: string | null
 }
 
 export interface ArticleRenderData extends ArticleBase {
-  publishedAt: string | null;
-  teaserText: string;
-  img: string;
-  imgAlt: string;
-  imgTitle: string;
-  content: string;
+  publishedAt: string | null
+  teaserText: string
+  img: string
+  imgAlt: string
+  imgTitle: string
+  content: string
 }
 
 export interface ArticleFormData extends ArticleRenderData {
-  autoURL: boolean;
+  autoURL: boolean
 }
 
 export interface ArticleDBInterface {
-  getPreviewArticles: () => Promise<ArticleTeaserData[]>;
-  getArticlesForTable: () => Promise<ArticleTableData[]>;
-  getPublishedArticleToRender: (url: string) => Promise<ArticleRenderData>;
-  getArticleFormData: (url: string) => Promise<ArticleFormData>;
+  getPreviewArticles: () => Promise<ArticleTeaserData[]>
+  getArticlesForTable: () => Promise<ArticleTableData[]>
+  getPublishedArticleToRender: (url: string) => Promise<ArticleRenderData>
+  getArticleFormData: (url: string) => Promise<ArticleFormData>
 }
 
 export class ArticleDB implements ArticleDBInterface {
@@ -42,7 +41,11 @@ export class ArticleDB implements ArticleDBInterface {
     id: true,
     title: true,
     url: true,
-  });
+  })
+
+  private toDateString(date: Date) {
+    return date.toJSON().replace(/T.+/, "")
+  }
 
   public async getPreviewArticles() {
     const articles = await prisma.article.findMany({
@@ -60,17 +63,17 @@ export class ArticleDB implements ArticleDBInterface {
       orderBy: {
         publishedAt: "desc",
       },
-    });
+    })
 
     return articles.map((article) => ({
       ...article,
       publishedAt: article.publishedAt
-        ? toDateString(article.publishedAt)
+        ? this.toDateString(article.publishedAt)
         : "Article not published",
       img: article.img
         ? `${API_IMAGE_ENDPOINT}/${article.img}`
         : "/img/placeholder.jpg",
-    }));
+    }))
   }
 
   public async getArticlesForTable() {
@@ -81,16 +84,16 @@ export class ArticleDB implements ArticleDBInterface {
         updatedAt: true,
         publishedAt: true,
       },
-    });
+    })
 
     return articles.map((article) => ({
       ...article,
-      createdAt: toDateString(article.createdAt),
-      updatedAt: toDateString(article.updatedAt),
+      createdAt: this.toDateString(article.createdAt),
+      updatedAt: this.toDateString(article.updatedAt),
       publishedAt: article.publishedAt
-        ? toDateString(article.publishedAt)
+        ? this.toDateString(article.publishedAt)
         : "No",
-    }));
+    }))
   }
 
   private renderDataSelect = Prisma.validator<Prisma.ArticleSelect>()({
@@ -101,7 +104,7 @@ export class ArticleDB implements ArticleDBInterface {
     imgTitle: true,
     publishedAt: true,
     content: true,
-  });
+  })
 
   public async getPublishedArticleToRender(url: string) {
     const article = await prisma.article.findFirst({
@@ -113,14 +116,14 @@ export class ArticleDB implements ArticleDBInterface {
       },
       select: this.renderDataSelect,
       rejectOnNotFound: true,
-    });
+    })
 
     return {
       ...article,
       publishedAt: article.publishedAt
-        ? toDateString(article.publishedAt)
+        ? this.toDateString(article.publishedAt)
         : "Article not published",
-    };
+    }
   }
 
   public async getArticleFormData(url: string) {
@@ -133,13 +136,13 @@ export class ArticleDB implements ArticleDBInterface {
         autoURL: true,
       },
       rejectOnNotFound: true,
-    });
+    })
 
     return {
       ...article,
       publishedAt: article.publishedAt
-        ? toDateString(article.publishedAt)
+        ? this.toDateString(article.publishedAt)
         : null,
-    };
+    }
   }
 }

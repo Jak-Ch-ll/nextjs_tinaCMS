@@ -1,66 +1,70 @@
-import { useRouter } from "next/router";
-import React, { useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import { InlineWysiwyg } from "react-tinacms-editor";
+import { useRouter } from "next/router"
+import React, { useEffect } from "react"
+import ReactMarkdown from "react-markdown"
+import { InlineWysiwyg } from "react-tinacms-editor"
 import {
   InlineForm,
   InlineImage,
   InlineText,
   InlineTextarea,
-} from "react-tinacms-inline";
-import { useCMS, useForm, usePlugin } from "tinacms";
-import { ArticleAPI } from "../../utils/ArticleAPI";
-import { ArticleFormData } from "../../utils/ArticleDB";
-import { API_IMAGE_ENDPOINT_INTERNAL } from "../../_constants";
+} from "react-tinacms-inline"
+import { useCMS, useForm, usePlugin } from "tinacms"
+import { ArticleAPI } from "../../utils/ArticleAPI"
+import { ArticleFormData } from "../../utils/ArticleDB"
+import { API_IMAGE_ENDPOINT_INTERNAL } from "../../_constants"
 
-import styles from "./BlogForm.module.scss";
-import { BlogImage } from "./BlogImage";
-import { useAutoURL } from "./hooks/useAutoURL";
-import { useLocalStorage } from "./hooks/useLocalStorage";
+import styles from "./BlogForm.module.scss"
+import { BlogImage } from "./BlogImage"
+import { useAutoURL } from "./hooks/useAutoURL"
+import { useLocalStorage } from "./hooks/useLocalStorage"
 
 interface FormProps {
-  article?: ArticleFormData;
+  article?: ArticleFormData
 }
 
 interface FormData extends ArticleFormData {
-  published: boolean;
+  published: boolean
 }
 
 export const BlogForm = ({ article }: FormProps) => {
-  const cms = useCMS();
-  const router = useRouter();
-  const articleAPI = new ArticleAPI();
+  const cms = useCMS()
+  const router = useRouter()
+  const articleAPI = new ArticleAPI()
 
   const onSubmit = async (data: FormData) => {
+    const publishedAt = data.published
+      ? new Date(article?.publishedAt || Date.now())
+      : null
+
     const formData = {
       ...data,
-      publishedAt: data.published ? new Date() : null,
-    };
+      publishedAt,
+    }
 
     // @ts-ignore
-    delete formData.published;
+    delete formData.published
 
     try {
-      if (article) await articleAPI.patch(article.id, formData);
-      else await articleAPI.post(formData);
+      if (article) await articleAPI.patch(article.id, formData)
+      else await articleAPI.post(formData)
 
-      cms.alerts.success("Article saved");
+      cms.alerts.success("Article saved")
 
       setTimeout(() => {
-        router.push(formData.url);
-      }, 500);
+        router.push(formData.url)
+      }, 500)
     } catch (err) {
-      cms.alerts.error(err.response.statusText);
-      throw new Error();
+      cms.alerts.error(err.response.statusText)
+      throw new Error()
     }
-  };
+  }
 
   const getInitialValues = (): FormData | void => {
-    if (!article) return;
-    const data = { ...article, published: !!article.publishedAt };
+    if (!article) return
+    const data = { ...article, published: !!article.publishedAt }
 
-    return data;
-  };
+    return data
+  }
 
   const [data, form] = useForm<FormData>({
     id: "blogpost",
@@ -86,7 +90,7 @@ export const BlogForm = ({ article }: FormProps) => {
                   {!content && <li>The content</li>}
                 </ul>
               </>
-            );
+            )
           }
         },
       },
@@ -99,7 +103,7 @@ export const BlogForm = ({ article }: FormProps) => {
         label: "The URL after www.homepage.de/blog/",
         component: "text",
         validate: (value) => {
-          if (!value) return "URL can not be empty";
+          if (!value) return "URL can not be empty"
         },
       },
       {
@@ -129,12 +133,12 @@ export const BlogForm = ({ article }: FormProps) => {
         component: "text",
       },
     ],
-  });
+  })
 
-  useLocalStorage(form);
-  useAutoURL(form, form.values.autoURL);
+  useLocalStorage(form)
+  useAutoURL(form, form.values.autoURL)
 
-  usePlugin(form);
+  usePlugin(form)
 
   return (
     <InlineForm form={form}>
@@ -157,7 +161,7 @@ export const BlogForm = ({ article }: FormProps) => {
           {({ src }) => {
             return (
               src && <BlogImage src={`http://localhost:3000${src}`} alt="" />
-            );
+            )
           }}
         </InlineImage>
         <p>
@@ -174,5 +178,5 @@ export const BlogForm = ({ article }: FormProps) => {
         </p>
       </div>
     </InlineForm>
-  );
-};
+  )
+}
