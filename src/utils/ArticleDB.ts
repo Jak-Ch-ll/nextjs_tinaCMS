@@ -17,7 +17,7 @@ export interface ArticleTableData extends ArticleBase {
 }
 
 export interface ArticleRenderData extends ArticleBase {
-  publishedAt: string | null
+  publishedAt: string
   teaserText: string
   img: string
   imgAlt: string
@@ -25,7 +25,9 @@ export interface ArticleRenderData extends ArticleBase {
   content: string
 }
 
-export interface ArticleFormData extends ArticleRenderData {
+export interface ArticleFormData
+  extends Omit<ArticleRenderData, "publishedAt"> {
+  publishedAt: string | null
   autoURL: boolean
 }
 
@@ -47,7 +49,7 @@ export class ArticleDB implements ArticleDBInterface {
     return date.toJSON().replace(/T.+/, "")
   }
 
-  public async getPreviewArticles() {
+  public async getPreviewArticles(num?: number) {
     const articles = await prisma.article.findMany({
       where: {
         publishedAt: {
@@ -63,6 +65,7 @@ export class ArticleDB implements ArticleDBInterface {
       orderBy: {
         publishedAt: "desc",
       },
+      take: num,
     })
 
     return articles.map((article) => ({
@@ -83,6 +86,9 @@ export class ArticleDB implements ArticleDBInterface {
         createdAt: true,
         updatedAt: true,
         publishedAt: true,
+      },
+      orderBy: {
+        updatedAt: "desc",
       },
     })
 
