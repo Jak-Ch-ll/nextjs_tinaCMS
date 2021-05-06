@@ -1,6 +1,10 @@
-@use "/src/styles/properties.scss" as *;
+.placeholder > div {
+  min-height: 2rem;
+}
 
-.container {
-  width: 100vw;
-  max-width: 75ch;
+.placeholder::before {
+  position: absolute;
+  content: attr(placeholder);
+
+  color: #6c6f6e;
 }

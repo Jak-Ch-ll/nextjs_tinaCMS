@@ -1,13 +1,76 @@
-.container {
-  width: 100%;
-}
+@use "/src/styles/abstracts" as *;
 
-.title {
-  color: blueviolet;
+.container {
+  max-width: $mw-blog;
+  margin: 0 auto;
+  font-size: $font-size-400;
+
+  min-height: calc(100vh - #{$banner-height});
+  overflow: hidden;
 }
 
 .imgContainer {
   position: relative;
-  width: 100%;
-  height: min(30rem, 70vw);
+  width: 100% !important;
+  height: calc(min(#{$mw-blog}, 100vw) / 6 * 4) !important;
+  margin-bottom: 2vh;
+
+  background-color: $clr-neutral-400;
+
+  @media (orientation: portrait) and (max-width: #{$mw-blog}) {
+    order: -1;
+    margin-left: -$margin-page;
+    width: 100vw;
+  }
+}
+
+.article {
+  padding: $margin-page;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  order: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 2.5rem;
+  font-size: clamp(2.5rem, 5vw, 3rem);
+}
+
+.intro {
+  @include intro-text;
+  margin: 2rem 0 2rem;
+}
+
+.content {
+  font-size: $font-size-400;
+  line-height: 160%;
+
+  p + p {
+    margin-top: 1rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+    font-size: clamp(2rem, 4vw, 2.25rem);
+
+    margin: {
+      top: 0.75em;
+      bottom: 0.5em;
+    }
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-size: clamp(1.5rem, 3vw, 1.75rem);
+
+    margin: {
+      top: 0.75em;
+      bottom: 0.25em;
+    }
+  }
 }

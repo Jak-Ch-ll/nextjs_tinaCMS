@@ -6,28 +6,50 @@ import { DateTime } from "./DateTime"
 
 export interface ArticlePreviewProps {
   article: ArticleTeaserData
+  alwaysShowImg?: boolean
 }
 
 export const ArticlePreview = ({
   article,
+  alwaysShowImg = true,
 }: ArticlePreviewProps): JSX.Element => {
   return (
-    <div className={styles.container}>
+    <div className={styles.component}>
       <div className={styles.content}>
         <DateTime date={article.publishedAt} />
-        <h3 className={styles.title}>{article.title}</h3>
+        <LinkTo href={`/blog/${article.url}`}>
+          <h3 className={styles.title}>{article.title}</h3>
+        </LinkTo>
+        <div
+          className={`${styles.innerImgContainer} ${
+            alwaysShowImg && styles.alwaysShow
+          }`}
+        >
+          <Image
+            src={article.img}
+            alt=""
+            role="presentation"
+            layout="fill"
+            objectFit="cover"
+          />
+        </div>
         <p className={styles.text}>{article.teaserText}</p>
-        <LinkTo className={styles.link} href={`/blog/${article.url}`}>
+        <LinkTo
+          className={styles.link}
+          href={`/blog/${article.url}`}
+          role="presentation"
+          aria-hidden={true}
+        >
           More
         </LinkTo>
       </div>
-      <div className="imgBox">
+      <div className={styles.imgContainer}>
         <Image
           src={article.img}
           alt=""
           role="presentation"
-          width={150}
-          height={100}
+          layout="fill"
+          objectFit="cover"
         />
       </div>
     </div>

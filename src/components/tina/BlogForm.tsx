@@ -1,5 +1,5 @@
 import { useRouter } from "next/router"
-import React, { useEffect } from "react"
+import React from "react"
 import ReactMarkdown from "react-markdown"
 import { InlineWysiwyg } from "react-tinacms-editor"
 import {
@@ -11,12 +11,16 @@ import {
 import { useCMS, useForm, usePlugin } from "tinacms"
 import { ArticleAPI } from "../../utils/ArticleAPI"
 import { ArticleFormData } from "../../utils/ArticleDB"
-import { API_IMAGE_ENDPOINT_INTERNAL } from "../../_constants"
 
-import styles from "./BlogForm.module.scss"
 import { BlogImage } from "./BlogImage"
 import { useAutoURL } from "./hooks/useAutoURL"
 import { useLocalStorage } from "./hooks/useLocalStorage"
+import { DateTime } from "../DateTime"
+
+import styles from "./BlogForm.module.scss"
+import blogStyles from "../../pages/blog/[url].module.scss"
+import imageStyles from "./BlogImage.module.scss"
+import { blogMarkdownRenderers } from "../../pages/blog/[url].page"
 
 interface FormProps {
   article?: ArticleFormData
@@ -32,13 +36,9 @@ export const BlogForm = ({ article }: FormProps) => {
   const articleAPI = new ArticleAPI()
 
   const onSubmit = async (data: FormData) => {
-    const publishedAt = data.published
-      ? new Date(article?.publishedAt || Date.now())
-      : null
-
     const formData = {
       ...data,
-      publishedAt,
+      publishedAt: data.published ? new Date() : null,
     }
 
     // @ts-ignore
@@ -142,41 +142,64 @@ export const BlogForm = ({ article }: FormProps) => {
 
   return (
     <InlineForm form={form}>
-      <div className={`${styles.container}`}>
-        <h1>
-          <InlineText name="title" placeholder="Write an awesome title" />
-        </h1>
-        <p>
-          <InlineTextarea
-            name="teaserText"
-            placeholder="And some teaser text"
-          />
-        </p>
-        {/* <TinaImage name="img" /> */}
-        <InlineImage
-          className={styles.imgContainer}
-          name="img"
-          parse={(media) => media.id}
-        >
-          {({ src }) => {
-            return (
-              src && <BlogImage src={`http://localhost:3000${src}`} alt="" />
-            )
-          }}
-        </InlineImage>
-        <p>
-          <InlineWysiwyg
-            name="content"
-            format="markdown"
-            imageProps={{
-              parse: (media) => `${API_IMAGE_ENDPOINT_INTERNAL}/${media.id}`,
-              previewSrc: (url) => url,
-            }}
+      <main className={`${blogStyles.container}`}>
+        <article className={blogStyles.article}>
+          <header className={blogStyles.header}>
+            <h1 className={blogStyles.title}>
+              <InlineText
+                name="title"
+                placeholder="Your awesome title"
+                focusRing={{ offset: 5 }}
+              />
+            </h1>
+            <DateTime date={article?.publishedAt || "Not yet published"} />
+            <p className={blogStyles.intro}>
+              <InlineTextarea
+                name="teaserText"
+                placeholder="Here is space for your teaser text"
+                focusRing={{ offset: 5 }}
+              />
+            </p>
+          </header>
+          <div className={!data.img ? imageStyles.container : ""}>
+            <InlineImage
+              name="img"
+              parse={(media) => media.id}
+              focusRing={{ offset: 5 }}
+            >
+              {({ src }) => {
+                return (
+                  src && (
+                    <BlogImage src={`http://localhost:3000${src}`} alt="" />
+                  )
+                )
+              }}
+            </InlineImage>
+          </div>
+          <section
+            className={
+              blogStyles.content +
+              (!data.content ? ` ${styles.placeholder}` : "")
+            }
+            placeholder="And this is the space for the rest of your article"
           >
-            <ReactMarkdown source={data.content} />
-          </InlineWysiwyg>
-        </p>
-      </div>
+            <InlineWysiwyg
+              focusRing={{ offset: 5 }}
+              name="content"
+              format="markdown"
+              imageProps={{
+                parse: (media) => `/${media.id}`,
+                previewSrc: (url) => url,
+              }}
+            >
+              <ReactMarkdown
+                renderers={blogMarkdownRenderers}
+                source={data.content}
+              />
+            </InlineWysiwyg>
+          </section>
+        </article>
+      </main>
     </InlineForm>
   )
 }

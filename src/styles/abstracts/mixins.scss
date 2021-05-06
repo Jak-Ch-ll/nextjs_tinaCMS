@@ -1,0 +1,46 @@
+@use "sass:color";
+
+@use "colors" as *;
+@use "fonts" as *;
+
+$primary-darker: color.scale($primary, $blackness: 50%);
+
+@mixin link {
+  color: blue;
+  text-decoration: underline;
+
+  &:visited {
+    color: darkblue;
+  }
+}
+
+@mixin flow($space: 1em) {
+  & > * + * {
+    margin-top: $space;
+  }
+}
+
+@mixin copyright {
+  font-size: 0.75rem;
+  color: grey;
+}
+
+@mixin button($color) {
+  font-size: 1.8rem;
+
+  color: $color;
+
+  border: 0.05em solid $color;
+  border-radius: 0.2em;
+  padding: 0.35em 1em;
+
+  @media (orientation: landscape) {
+    padding: 0.1em 1.8em;
+  }
+}
+
+@mixin intro-text {
+  font-size: $font-size-500;
+  letter-spacing: 0.07ch;
+  line-height: 160%;
+}

@@ -1,0 +1,9 @@
+@use "/src/styles/abstracts" as *;
+
+.main {
+  min-height: calc(100vh - #{$banner-height});
+  padding: {
+    left: $margin-page;
+    right: $margin-page;
+  }
+}

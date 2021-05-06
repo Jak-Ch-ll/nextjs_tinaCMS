@@ -1,33 +1,64 @@
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-direction: row-reverse;
-  gap: 1rem;
+@use "/src/styles/abstracts" as *;
+
+$breakpoint-sm: "min-width: 38rem";
+
+.component {
+  @media ($breakpoint-sm) {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .content {
-  max-width: 80%;
-}
-
-.date {
-  color: gray;
-  font-size: 0.9rem;
+  @media ($breakpoint-sm) {
+    flex-basis: 60vw;
+    flex-grow: 1;
+  }
 }
 
 .title {
   margin: 0.25rem 0;
+  font-size: $font-size-600;
 }
 
 .text {
   margin: 0.25rem 0;
+  font-size: $font-size-400;
+  letter-spacing: 0.07ch;
 }
 
 .link {
-  color: red;
-  text-decoration: underline;
+  @include link;
+  font-size: $font-size-600;
 }
 
-.imgBox {
-  flex: 1 0 100%;
+.imgContainer,
+.innerImgContainer {
+  position: relative;
+  width: 100%;
+  height: calc((100vw - (2 * #{$margin-page})) / 3 * 2);
+
+  display: none;
+}
+
+.innerImgContainer {
+  &.alwaysShow {
+    display: inline-block;
+
+    @media ($breakpoint-sm) {
+      display: none;
+    }
+  }
+}
+
+.imgContainer {
+  @media ($breakpoint-sm) {
+    flex: 0 0 15rem;
+
+    display: inline-block;
+
+    height: calc(15rem / 3 * 2);
+
+    margin-left: 1rem;
+  }
 }
