@@ -4,6 +4,7 @@ import MaterialTable from "material-table"
 import { ArticleAPI } from "../../utils/ArticleAPI"
 import { useState } from "react"
 import { useSession } from "next-auth/client"
+import { signOut } from "next-auth/client"
 
 export interface ArticleTableProps {
   articles: ArticleTableData[]
@@ -12,6 +13,7 @@ export interface ArticleTableProps {
 export const ArticleTable = ({ articles }: ArticleTableProps): JSX.Element => {
   const [session] = useSession()
   const [tableData, setTableData] = useState(articles)
+  const [showFilter, setShowFilter] = useState(false)
 
   const router = useRouter()
 
@@ -19,7 +21,7 @@ export const ArticleTable = ({ articles }: ArticleTableProps): JSX.Element => {
 
   return (
     <MaterialTable
-      title={`Hello ${session ? session.user.name : ""}`}
+      title={`Hello ${session ? session.user?.name : ""}`}
       columns={[
         { title: "ID", field: "id" },
         { title: "Title", field: "title" },
@@ -55,9 +57,15 @@ export const ArticleTable = ({ articles }: ArticleTableProps): JSX.Element => {
                 tableData.filter((article) => article.id !== data.id)
               )
             } catch (err) {
-              console.log(err)
+              console.log("logged error:", err)
             }
           },
+        },
+        {
+          position: "toolbar",
+          icon: "filter_list",
+          tooltip: "Filter",
+          onClick: () => setShowFilter((showFilter) => !showFilter),
         },
         {
           position: "toolbar",
@@ -65,12 +73,23 @@ export const ArticleTable = ({ articles }: ArticleTableProps): JSX.Element => {
           tooltip: "New article",
           onClick: () => router.push("/tina/new"),
         },
+
+        {
+          position: "toolbar",
+          icon: "logout",
+          tooltip: "Logout",
+          onClick: () => {
+            const confirm = window.confirm("Are you sure, you want to log out?")
+            if (confirm) signOut()
+          },
+        },
       ]}
       options={{
         draggable: false,
         actionsColumnIndex: -1,
-        filtering: true,
+        filtering: showFilter,
         pageSize: 10,
+        pageSizeOptions: [10, 20, 50],
       }}
     />
   )
