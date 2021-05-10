@@ -1,27 +1,51 @@
-import { signIn, signOut, useSession } from "next-auth/client";
+import { signIn, signOut, useSession } from "next-auth/client"
+
+import LinkTo from "../components/LinkTo"
+
+import styles from "./auth.module.scss"
 
 const IndexPage = () => {
-  const [session, loading] = useSession();
+  const [session, loading] = useSession()
 
-  if (loading) {
-    return <div>Loading ...</div>;
-  }
-
-  if (session) {
+  const renderBody = () => {
+    if (loading) return <div>Loading ...</div>
+    if (session) {
+      return (
+        <>
+          <div>Hello {session.user?.name}, what do you want to do today?</div>
+          <LinkTo className={styles.button} href="/tina/new">
+            Create a new article
+          </LinkTo>
+          <LinkTo className={styles.button} href="/tina">
+            Go to article overview
+          </LinkTo>
+          <button className={styles.button} onClick={() => signOut()}>
+            Sign Out
+          </button>
+        </>
+      )
+    }
     return (
       <>
-        <div>Hello, {session.user.name}</div>
-        <button onClick={() => signOut()}>Sign Out</button>
+        <div>Please sign in to continue:</div>
+        <button
+          className={styles.button}
+          onClick={() =>
+            signIn("email", {
+              callbackUrl: "/tina",
+            })
+          }
+        >
+          Sign In
+        </button>
       </>
-    );
-  } else {
-    return (
-      <>
-        <div>You are not logged in</div>
-        <button onClick={() => signIn()}>Sign In</button>
-      </>
-    );
+    )
   }
-};
+  return (
+    <>
+      <main className={styles.page}>{renderBody()}</main>
+    </>
+  )
+}
 
-export default IndexPage;
+export default IndexPage

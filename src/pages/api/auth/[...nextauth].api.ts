@@ -1,8 +1,8 @@
-import NextAuth, { User } from "next-auth";
-import Providers from "next-auth/providers";
+import NextAuth from "next-auth"
+import Providers from "next-auth/providers"
 
-import prisma from "../../../../prisma/prisma";
-import Adapters from "next-auth/adapters";
+import prisma from "../../../../prisma/prisma"
+import Adapters from "next-auth/adapters"
 
 // import { sendVerificationRequest } from "../../../auth/mail";
 
@@ -27,14 +27,9 @@ export default NextAuth({
     // only allow signin of users in the database
     async signIn(user, account, profile) {
       if (user.name) {
-        return true;
+        return true
       }
-      return false;
-    },
-
-    // redirect to main edit page after loggin in via link
-    async redirect(url, baseUrl) {
-      return "/edit";
+      return false
     },
   },
-});
+})

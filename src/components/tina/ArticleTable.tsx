@@ -80,7 +80,7 @@ export const ArticleTable = ({ articles }: ArticleTableProps): JSX.Element => {
           tooltip: "Logout",
           onClick: () => {
             const confirm = window.confirm("Are you sure, you want to log out?")
-            if (confirm) signOut()
+            if (confirm) signOut({ callbackUrl: `/` })
           },
         },
       ]}

@@ -1,0 +1,50 @@
+@use "/src/styles/abstracts" as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  @include flow(0.5rem);
+
+  font-size: $font-size-500;
+}
+
+.button {
+  border: 1px solid black;
+  border-radius: 1rem;
+  background-color: transparent;
+  font-size: $font-size-400;
+  min-width: 20ch;
+  text-align: center;
+  padding: 0.3em 0.5em;
+  font-family: $ff-main;
+
+  position: relative;
+
+  &::after {
+    box-sizing: border-box;
+    background-color: white;
+
+    position: absolute;
+    z-index: -1;
+    content: "";
+
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+
+    border: inherit;
+    border-color: transparent;
+    border-radius: inherit;
+
+    transform: scale(0);
+    transition: transform 100ms ease-in;
+  }
+
+  &:hover::after {
+    transform: scale(1);
+  }
+}
