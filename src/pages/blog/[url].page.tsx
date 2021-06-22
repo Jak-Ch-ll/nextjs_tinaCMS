@@ -53,7 +53,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const blogMarkdownRenderers = {
   image: ({ src, alt = "" }: { src: string; alt: string }) => {
-    return <BlogImage src={`http://localhost:3000${src}`} alt={alt} />
+    return <BlogImage src={src} alt={alt} />
   },
 }
 

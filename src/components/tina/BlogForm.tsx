@@ -1,26 +1,29 @@
+import { IconButton } from "@material-ui/core"
+import Tooltip from "@material-ui/core/Tooltip"
+import AddIcon from "@material-ui/icons/Add"
+import DeleteIcon from "@material-ui/icons/Delete"
+import ExitToAppIcon from "@material-ui/icons/ExitToApp"
+import HomeIcon from "@material-ui/icons/Home"
+import { signOut } from "next-auth/client"
 import { useRouter } from "next/router"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { InlineWysiwyg } from "react-tinacms-editor"
-import {
-  InlineForm,
-  InlineImage,
-  InlineText,
-  InlineTextarea,
-} from "react-tinacms-inline"
+import { InlineForm, InlineImage, InlineTextarea } from "react-tinacms-inline"
 import { useCMS, useForm, usePlugin } from "tinacms"
+import blogStyles from "../../pages/blog/[url].module.scss"
+import { blogMarkdownRenderers } from "../../pages/blog/[url].page"
 import { ArticleAPI } from "../../utils/ArticleAPI"
 import { ArticleFormData } from "../../utils/ArticleDB"
-
+import { API_IMAGE_ENDPOINT } from "../../_constants"
+import { DateTime } from "../DateTime"
+import styles from "./BlogForm.module.scss"
 import { BlogImage } from "./BlogImage"
+import imageStyles from "./BlogImage.module.scss"
 import { useAutoURL } from "./hooks/useAutoURL"
 import { useLocalStorage } from "./hooks/useLocalStorage"
-import { DateTime } from "../DateTime"
 
-import styles from "./BlogForm.module.scss"
-import blogStyles from "../../pages/blog/[url].module.scss"
-import imageStyles from "./BlogImage.module.scss"
-import { blogMarkdownRenderers } from "../../pages/blog/[url].page"
+
 
 interface FormProps {
   article?: ArticleFormData
@@ -59,8 +62,14 @@ export const BlogForm = ({ article }: FormProps) => {
     }
   }
 
-  const getInitialValues = (): FormData | void => {
-    if (!article) return
+  const getInitialValues = (): Partial<FormData> => {
+    if (!article) {
+      return {
+        published: false,
+        url: "",
+        autoURL: true,
+      }
+    }
     const data = { ...article, published: !!article.publishedAt }
 
     return data
@@ -72,6 +81,95 @@ export const BlogForm = ({ article }: FormProps) => {
     onSubmit,
     initialValues: getInitialValues(),
     fields: [
+      {
+        name: "_",
+        component: () => (
+          <div className={styles.sidebarButtons}>
+            {article ? (
+              <>
+                <Tooltip
+                  title="New article"
+                  classes={{
+                    popper: styles.sidebarTooltip,
+                  }}
+                >
+                  <IconButton
+                    aria-label="New article"
+                    onClick={() => router.push("/edit/new")}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip
+                  title="Delete this article"
+                  classes={{
+                    popper: styles.sidebarTooltip,
+                  }}
+                >
+                  <IconButton
+                    aria-label="Delete this article"
+                    onClick={async () => {
+                      const { id } = article
+
+                      const confirmed = window.confirm(
+                        `Delete article '${data.title}'?`
+                      )
+                      if (!confirmed) return
+
+                      try {
+                        await articleAPI.delete(id)
+                        cms.alerts.success(
+                          "Successfully deleted article. Going back home"
+                        )
+                        setTimeout(() => router.push("/edit"), 3000)
+                      } catch (err) {
+                        cms.alerts.error(
+                          "Something went wrong while deleting. Details: ",
+                          err
+                        )
+                      }
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              </>
+            ) : null}
+            <Tooltip
+              title="Home"
+              classes={{
+                popper: styles.sidebarTooltip,
+              }}
+            >
+              <IconButton
+                aria-label="Home"
+                onClick={() => router.push("/edit")}
+              >
+                <HomeIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              title="Logout"
+              classes={{
+                popper: styles.sidebarTooltip,
+              }}
+            >
+              <IconButton
+                aria-label="Logout"
+                onClick={() => {
+                  const confirm = window.confirm(
+                    "Are you sure, you want to log out?"
+                  )
+                  if (confirm) signOut({ callbackUrl: `/` })
+                }}
+              >
+                <ExitToAppIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
+        ),
+      },
       {
         name: "published",
         label: "Publish",
@@ -100,6 +198,7 @@ export const BlogForm = ({ article }: FormProps) => {
       },
       {
         name: "url",
+        defaultValue: "",
         label: "The URL after www.homepage.de/blog/",
         component: "text",
         validate: (value) => {
@@ -114,13 +213,7 @@ export const BlogForm = ({ article }: FormProps) => {
       },
       {
         name: "Teaser image",
-        component: () => <h4>Teaser image</h4>,
-      },
-      {
-        name: "img",
-        label: "Image",
-        component: "image",
-        parse: (media) => media.id,
+        component: () => <h4>Teaser image details</h4>,
       },
       {
         name: "imgAlt",
@@ -146,9 +239,9 @@ export const BlogForm = ({ article }: FormProps) => {
         <article className={blogStyles.article}>
           <header className={blogStyles.header}>
             <h1 className={blogStyles.title}>
-              <InlineText
+              <InlineTextarea
                 name="title"
-                placeholder="Your awesome title"
+                placeholder="Your awesome title comes here"
                 focusRing={{ offset: 5 }}
               />
             </h1>
@@ -168,27 +261,25 @@ export const BlogForm = ({ article }: FormProps) => {
               focusRing={{ offset: 5 }}
             >
               {({ src }) => {
-                return (
-                  src && (
-                    <BlogImage src={`http://localhost:3000${src}`} alt="" />
-                  )
-                )
+                return src && <BlogImage src={src} alt="" />
               }}
             </InlineImage>
           </div>
           <section
-            className={
-              blogStyles.content +
-              (!data.content ? ` ${styles.placeholder}` : "")
-            }
-            placeholder="And this is the space for the rest of your article"
+            className={`
+              ${blogStyles.content} ${styles.content}${
+              !data.content ? ` ${styles.placeholder}` : ""
+            }`}
+            placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
           >
             <InlineWysiwyg
+              className={styles.content}
               focusRing={{ offset: 5 }}
               name="content"
               format="markdown"
+              sticky="5rem"
               imageProps={{
-                parse: (media) => `/${media.id}`,
+                parse: (media) => `${API_IMAGE_ENDPOINT}/${media.id}`,
                 previewSrc: (url) => url,
               }}
             >

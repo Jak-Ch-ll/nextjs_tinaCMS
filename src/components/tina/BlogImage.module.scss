@@ -10,7 +10,7 @@
 
   @media (orientation: portrait) and (max-width: #{$mw-blog}) {
     order: -1;
-    margin-left: -$margin-page;
+    margin-left: calc(-1 * #{$margin-page});
     width: 100vw;
   }
 }

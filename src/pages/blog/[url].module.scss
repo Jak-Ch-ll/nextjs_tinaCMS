@@ -2,11 +2,10 @@
 
 .container {
   max-width: $mw-blog;
-  margin: 0 auto;
+  margin: 0 auto ($padding-section / 2);
   font-size: $font-size-400;
 
   min-height: calc(100vh - #{$banner-height});
-  overflow: hidden;
 }
 
 .imgContainer {
@@ -25,8 +24,6 @@
 }
 
 .article {
-  padding: $margin-page;
-
   display: flex;
   flex-direction: column;
 }

@@ -1,10 +1,30 @@
-.placeholder > div {
-  min-height: 2rem;
+.content > div {
+  min-height: 20rem;
+
+  img {
+    width: 100%;
+  }
+}
+
+.placeholder {
+  position: relative;
 }
 
 .placeholder::before {
   position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   content: attr(placeholder);
 
   color: #6c6f6e;
+}
+
+.sidebarButtons {
+  margin-bottom: 3rem;
+}
+
+div.sidebarTooltip {
+  z-index: 30000;
 }
