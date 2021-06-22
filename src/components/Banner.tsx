@@ -1,7 +1,5 @@
 import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
-import { renderers } from "react-markdown";
-
 import styles from "./Banner.module.scss";
 import LinkTo from "./LinkTo";
 
@@ -13,10 +11,6 @@ export function Banner() {
     {
       url: "/",
       text: "Home",
-    },
-    {
-      url: "/blog",
-      text: "Blog",
     },
     {
       url: "/tina",
