@@ -16,3 +16,6 @@ This project is a continuation of [Next.js and EditorJS CMS](https://github.com/
   * Quite easy to use after a bit of setup
 * [Jest](https://jestjs.io/)
   * I started to learn TDD and want to use it in practice
+
+## Real-World Use
+This application is used as the basis of the follwing page: https://rodicadoehnert.de/
